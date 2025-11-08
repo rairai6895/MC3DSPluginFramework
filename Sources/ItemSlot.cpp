@@ -6,7 +6,7 @@ ItemSlot::ItemSlot() {
     Function<void>(0x1D2894)(this, 0, 0, 0);
 };
 
-ItemSlot::ItemSlot(u16 itemID, u8 count, u16 dataValue) {
+ItemSlot::ItemSlot(ItemID itemID, u8 count, u16 dataValue) {
     Function<void>(0x1D2894)(this, itemID, count, dataValue);
 }
 
