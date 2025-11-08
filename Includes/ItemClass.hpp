@@ -18,7 +18,7 @@ class Item {
     u8 GetBlockID(void);
 
   private:
-    static constexpr Item **Instances = (Item **)0xB0CEF0;
+    static inline Item **Instances = (Item **)0xB0CEF0;
 
     u32 unk1;
     u8 maxStack;
