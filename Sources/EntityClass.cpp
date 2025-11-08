@@ -37,12 +37,12 @@ ArmorSlots &Entity::GetArmorSlot(void) const {
     return *(ArmorSlots *)this->Offset(0xF40);
 }
 
-SlotData &Entity::GetOffhandSlot(void) const {
-    return *(SlotData *)Offset(0xF08);
+ItemSlot &Entity::GetOffhandSlot(void) const {
+    return *(ItemSlot *)Offset(0xF08);
 }
 
-SlotData &Entity::GetMainhandSlot(void) const {
-    return *(SlotData *)Offset(0xED8);
+ItemSlot &Entity::GetMainhandSlot(void) const {
+    return *(ItemSlot *)Offset(0xED8);
 }
 
 CameraAngles &Entity::Camera(void) const {

@@ -7,40 +7,40 @@
 namespace MC3DSPluginFramework {
 namespace Inventory {
 
-SlotData *Get(size_t index) {
+ItemSlot *Get(size_t index) {
     if (u8 i = 9 + index; i <= 44)    // 9 ~ 44
         if (Entity *player = Player::GetInstance()) {
             u32 param = Function<u32>(0x726090)(player);
-            return Function<SlotData *>(0x703998)(param, i);
+            return Function<ItemSlot *>(0x703998)(param, i);
         }
 
     return nullptr;
 }
 
-SlotData *NextEmptySlot(void) {
-    if (SlotData *inv = Get(0))
+ItemSlot *NextEmptySlot(void) {
+    if (ItemSlot *inv = Get(0))
         for (size_t i = 0; i < 36; ++i)
-            if (!inv[i].itemdata)
+            if (!inv[i].itemInstance)
                 return &inv[i];
 
     return nullptr;
 }
 
-std::vector<SlotData *> EmptySlots(void) {
-    std::vector<SlotData *> res{};
-    if (SlotData *inv = Get(0))
+std::vector<ItemSlot *> EmptySlots(void) {
+    std::vector<ItemSlot *> res{};
+    if (ItemSlot *inv = Get(0))
         for (size_t i = 0; i < 36; ++i)
-            if (!inv[i].itemdata)
+            if (!inv[i].itemInstance)
                 res.push_back(&inv[i]);
 
     return res;
 }
 
-SlotData *Search(ItemData *itemdata, u16 dataValue, bool useDataValue) {
-    if (SlotData *inv = Get(0))
+ItemSlot *Search(Item *itemInstance, u16 dataValue, bool useDataValue) {
+    if (ItemSlot *inv = Get(0))
         for (size_t i = 0; i < 36; ++i) {
-            SlotData &target = inv[i];
-            if (target.itemdata == itemdata)
+            ItemSlot &target = inv[i];
+            if (target.itemInstance == itemInstance)
                 if (useDataValue ? target.dataValue == dataValue : true)
                     return &target;
         }
@@ -48,12 +48,12 @@ SlotData *Search(ItemData *itemdata, u16 dataValue, bool useDataValue) {
     return nullptr;
 }
 
-std::vector<SlotData *> Search_Vec(ItemData *itemdata, u16 dataValue, bool useDataValue) {
-    std::vector<SlotData *> res{};
-    if (SlotData *inv = Get(0))
+std::vector<ItemSlot *> Search_Vec(Item *itemInstance, u16 dataValue, bool useDataValue) {
+    std::vector<ItemSlot *> res{};
+    if (ItemSlot *inv = Get(0))
         for (size_t i = 0; i < 36; ++i) {
-            SlotData &target = inv[i];
-            if (target.itemdata == itemdata)
+            ItemSlot &target = inv[i];
+            if (target.itemInstance == itemInstance)
                 if (useDataValue ? target.dataValue == dataValue : true)
                     res.push_back(&target);
         }
@@ -61,8 +61,8 @@ std::vector<SlotData *> Search_Vec(ItemData *itemdata, u16 dataValue, bool useDa
     return res;
 }
 
-size_t Count(ItemData *itemdata, u16 dataValue, bool useDataValue) {
-    std::vector<SlotData *> find = Search_Vec(itemdata, dataValue, useDataValue);
+size_t Count(Item *itemInstance, u16 dataValue, bool useDataValue) {
+    std::vector<ItemSlot *> find = Search_Vec(itemInstance, dataValue, useDataValue);
     size_t res                   = 0;
     for (auto slot : find)
         res += slot->count;

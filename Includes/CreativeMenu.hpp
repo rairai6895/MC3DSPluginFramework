@@ -3,6 +3,7 @@
 
 #include "GameStructs.hpp"
 #include "HookEx.hpp"
+#include "ItemSlot.hpp"
 #include "gstd.hpp"
 
 namespace MC3DSPluginFramework {
@@ -18,7 +19,7 @@ enum Category : u16 {
     Miscellaneous          = 7,
 };
 
-gstd::vector<SlotData> &GetItemList(void);
+gstd::vector<ItemSlot> &GetItemList(void);
 void Append(Category category, u16 number, u16 itemID, u16 dataValue);
 void Append(Category category, u16 number, u16 itemID, u16 dataValue, const std::initializer_list<EnchantStatus> &enchants);
 void Append(Category category, u16 number, u16 itemID, u16 dataValue, const std::vector<EnchantStatus> &enchants);

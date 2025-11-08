@@ -82,35 +82,32 @@ void Player::SprintDelay(u32 delay) {
 }
 
 bool Player::IsInUnderWater(void) {
-    if (u32 BaseAddr = *(u32 *)0xA32244)
-        return *(bool *)(BaseAddr + 0x381);
+    if (u32 Addr = *(u32 *)0xA32244)
+        return *(bool *)(Addr + 0x381);
 
     return false;
 }
 
 void Player::IsInUnderWater(const bool flag) {
-    if (u32 BaseAddr = *(u32 *)0xA32244)
-        *(bool *)(BaseAddr + 0x380) = flag;
+    if (u32 Addr = *(u32 *)0xA32244)
+        *(bool *)(Addr + 0x380) = flag;
 }
 
 void Player::Teleport(const Vec3_Int &pos) {
     if (Entity *player = GetInstance()) {
-        u32 BaseAddr      = player->Offset();
-        Vec3_Float coord1 = {};
-        Vec3_Float coord2 = {};
-        Vec3_Float coord3 = {};
+        u32 Addr = player->Offset();
 
-        *(float *)(BaseAddr + 0x1C0) = pos.x + 0.5f;
-        *(float *)(BaseAddr + 0x288) = pos.x + 0.2f;
-        *(float *)(BaseAddr + 0x294) = pos.x + 0.8f;
+        *(float *)(Addr + 0x1C0) = pos.x + 0.5f;
+        *(float *)(Addr + 0x288) = pos.x + 0.2f;
+        *(float *)(Addr + 0x294) = pos.x + 0.8f;
 
-        *(float *)(BaseAddr + 0x1C4) = pos.y + 0.62f;
-        *(float *)(BaseAddr + 0x28C) = pos.y - 1;
-        *(float *)(BaseAddr + 0x298) = pos.y + 0.8f;
+        *(float *)(Addr + 0x1C4) = pos.y + 0.62f;
+        *(float *)(Addr + 0x28C) = pos.y - 1;
+        *(float *)(Addr + 0x298) = pos.y + 0.8f;
 
-        *(float *)(BaseAddr + 0x1C8) = pos.z + 0.5f;
-        *(float *)(BaseAddr + 0x290) = pos.z + 0.2f;
-        *(float *)(BaseAddr + 0x29C) = pos.z + 0.8f;
+        *(float *)(Addr + 0x1C8) = pos.z + 0.5f;
+        *(float *)(Addr + 0x290) = pos.z + 0.2f;
+        *(float *)(Addr + 0x29C) = pos.z + 0.8f;
 
         player->Velocity() = {};
     }

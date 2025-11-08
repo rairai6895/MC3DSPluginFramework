@@ -2,16 +2,17 @@
 #define INVENTORY_HPP
 
 #include "GameStructs.hpp"
+#include "ItemSlot.hpp"
 
 namespace MC3DSPluginFramework {
 namespace Inventory {
 
-SlotData *Get(size_t index);
-SlotData *NextEmptySlot(void);
-std::vector<SlotData *> EmptySlots(void);
-SlotData *Search(ItemData *itemdata, u16 dataValue = 0, bool useDataValue = false);
-std::vector<SlotData *> Search_Vec(ItemData *itemdata, u16 dataValue = 0, bool useDataValue = false);
-size_t Count(ItemData *itemdata, u16 dataValue = 0, bool useDataValue = false);
+ItemSlot *Get(size_t index);
+ItemSlot *NextEmptySlot(void);
+std::vector<ItemSlot *> EmptySlots(void);
+ItemSlot *Search(Item *itemInstance, u16 dataValue = 0, bool useDataValue = false);
+std::vector<ItemSlot *> Search_Vec(Item *itemInstance, u16 dataValue = 0, bool useDataValue = false);
+size_t Count(Item *itemInstance, u16 dataValue = 0, bool useDataValue = false);
 bool IsFull(void);
 bool IsEmpty(void);
 size_t HeldSlot(void);

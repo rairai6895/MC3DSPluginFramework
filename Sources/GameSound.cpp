@@ -6,7 +6,7 @@ namespace GameSound {
 void PlaySound(const Vec3_Float &pos, u32 id, u32 data1, u32 data2) {
     if (Entity *player = Player::GetInstance())
         if (gstd::vector<u32> *vec = (gstd::vector<u32> *)player->GetWorld()->Offset(0x74))
-            if (u32 SoundInstance = vec[0][4])
+            if (u32 SoundInstance = (*vec)[4])
                 Function<void>(0x74A520)(SoundInstance, id, &pos, data1, data2);
 }
 

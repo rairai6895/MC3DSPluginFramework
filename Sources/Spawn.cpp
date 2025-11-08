@@ -3,7 +3,7 @@
 namespace MC3DSPluginFramework {
 namespace Spawn {
 
-Entity *Item(const Vec3_Float &pos, const SlotData &item) {
+Entity *Item(const Vec3_Float &pos, const ItemSlot &item) {
     if (Entity *player = Player::GetInstance())
         return Function<Entity *>(0x645218)(*(u32 *)player->GetWorld()->Offset(0x1D0), *(u32 *)player->Offset(0x210), &item, player, &pos, 0);
     return nullptr;
@@ -46,7 +46,7 @@ Entity *Thunder(const Vec3_Float &pos) {
     return nullptr;
 }
 
-void Egg(const Vec3_Float &pos, const SlotData &egg) {
+void Egg(const Vec3_Float &pos, const ItemSlot &egg) {
     if (Entity *player = Player::GetInstance())
         Function<void>(0x36BB18)(*(u32 *)player->Offset(0x210), 0, &pos, 0, &egg);
 }

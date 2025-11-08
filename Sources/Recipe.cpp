@@ -3,8 +3,6 @@
 namespace MC3DSPluginFramework {
 namespace Recipe {
 
-namespace CTRPF = CTRPluginFramework;
-
 struct AppendRecipe {
     Category category;
     u16 num;
@@ -25,7 +23,7 @@ void ResetList(gstd::vector<RecipeData *> *list) {
     Function<void>(0x638CC0)(list);
 }
 
-void SetUpRecipes(CTRPF::Regs &regs, u32 *sp, CTRPF::HookEx *hook) {
+void SetUpRecipes(Regs &regs, u32 *sp, HookEx *hook) {
     gstd::vector<RecipeData *> *recipeList = (gstd::vector<RecipeData *> *)regs.r0;
     ResetList(recipeList);
 
@@ -38,25 +36,25 @@ void SetUpRecipes(CTRPF::Regs &regs, u32 *sp, CTRPF::HookEx *hook) {
             newRecipe->size_x   = Append_Recipe.size_x;
             newRecipe->size_y   = Append_Recipe.size_y;
 
-            gstd::vector<SlotData> need;
+            gstd::vector<ItemSlot> need;
             need.reserve(std::max<u32>(Append_Recipe.size_x, 1) * std::max<u32>(Append_Recipe.size_y, 1));
             for (auto &data : Append_Recipe.need) {
-                SlotData item(data.itemID, data.count, data.dataValue);
+                ItemSlot item(data.itemID, data.count, data.dataValue);
 
                 if (!data.enchants.empty())
-                    item.Enchant(data.enchants);
+                    item.Enchanting(gstd::vector<EnchantStatus>(data.enchants.begin(), data.enchants.end()));
 
                 need.push_back(std::move(item));
             }
 
             newRecipe->need = std::move(need);
 
-            SlotData item(Append_Recipe.res.itemID, Append_Recipe.res.count, Append_Recipe.res.dataValue);
+            ItemSlot item(Append_Recipe.res.itemID, Append_Recipe.res.count, Append_Recipe.res.dataValue);
 
             if (!Append_Recipe.res.enchants.empty())
-                item.Enchant(Append_Recipe.res.enchants);
+                item.Enchanting(gstd::vector<EnchantStatus>(Append_Recipe.res.enchants.begin(), Append_Recipe.res.enchants.end()));
 
-            newRecipe->res = std::move(gstd::vector<SlotData>({std::move(item)}));
+            newRecipe->res = std::move(gstd::vector<ItemSlot>({std::move(item)}));
 
             recipeList->push_back(newRecipe);
         }
@@ -64,7 +62,7 @@ void SetUpRecipes(CTRPF::Regs &regs, u32 *sp, CTRPF::HookEx *hook) {
 }
 
 void InstallHook(void) {
-    static CTRPF::HookEx hook(0x47AF04, SetUpRecipes, CTRPF::HookEx::USE_LR_TO_RETURN);
+    static HookEx hook(0x47AF04, SetUpRecipes, HookEx::USE_LR_TO_RETURN);
     hook.Enable();
     Hook_Installed = hook.IsEnabled();
 }

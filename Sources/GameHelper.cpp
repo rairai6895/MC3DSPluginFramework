@@ -11,14 +11,14 @@ namespace MC3DSPluginFramework {
 namespace GameHelper {
 
 bool Eat(int speed) {
-    if (const SlotData *inv = Inventory::Get(Inventory::HeldSlot()))
+    if (const ItemSlot *inv = Inventory::Get(Inventory::HeldSlot()))
         return Function<bool>(0x600798)(Player::GetInstance(), inv, std::clamp<int>(0x20 - speed, 1, 0x20));
     return false;
 }
 
 bool UseBow(bool fullCharge) {
-    if (const SlotData *inv = Inventory::Get(Inventory::HeldSlot()))
-        if (inv->CheckName("bow"))
+    if (const ItemSlot *inv = Inventory::Get(Inventory::HeldSlot()))
+        if (inv->itemInstance->Name() == "bow")
             return Function<bool>(0x600798)(Player::GetInstance(), inv, fullCharge ? 0x1192C : 0x11940);
     return false;
 }
@@ -117,15 +117,15 @@ int GetLevel(void) {
 }
 */
 
-void Equip(Entity *entity, SlotData &item) {
-    Function<void>(0x735B50)(item.itemdata, &item, entity);
+void Equip(Entity *entity, ItemSlot &item) {
+    Function<void>(0x735B50)(item.itemInstance, &item, entity);
 }
 
-bool IsWearableItem(const SlotData &item) {
+bool IsWearableItem(const ItemSlot &item) {
     return Function<bool>(0x6B15A0)(&item);
 }
 
-bool IsEquiped(Entity *entity, const SlotData &item) {
+bool IsEquiped(Entity *entity, const ItemSlot &item) {
     return Function<bool>(0x6B2954)(entity->Offset(0xF70), &item);
 }
 

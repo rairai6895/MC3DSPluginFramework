@@ -3,13 +3,14 @@
 
 #include "GameEnums.hpp"
 #include "GameStructs.hpp"
+#include "ItemSlot.hpp"
 #include "Structs.hpp"
 #include "WorldClass.hpp"
 
 namespace MC3DSPluginFramework {
 
 struct ArmorSlots {
-    SlotData helmet, chestplate, leggings, boots;
+    ItemSlot helmet, chestplate, leggings, boots;
 };
 
 class Entity {
@@ -21,8 +22,8 @@ class Entity {
     bool Check(const std::vector<EntityVtable> &ids) const;
     World *GetWorld(void) const;
     ArmorSlots &GetArmorSlot(void) const;
-    SlotData &GetOffhandSlot(void) const;
-    SlotData &GetMainhandSlot(void) const;
+    ItemSlot &GetOffhandSlot(void) const;
+    ItemSlot &GetMainhandSlot(void) const;
     CameraAngles &Camera(void) const;
     bool &IsTouchingWall(void) const;
     bool IsOnGround(void) const;

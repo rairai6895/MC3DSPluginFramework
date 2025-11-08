@@ -30,11 +30,10 @@ inline void ChangeMax(u8 max) {
 inline const gstd::vector<Item> *GetMessages(void) {
     if (u32 instance = *INSTANCE_PTR)
         return ((gstd::vector<Item> *)(instance + 0x9C));
+
     return nullptr;
 }
 
-// Do not use while the game thread is stopped.
-// ゲームスレッドが停止してる間は使用しないでください。
 inline bool Send(const gstd::string &str) {
     if (u32 instance = *INSTANCE_PTR) {
         Function<void>(0x11A680)(instance, str);

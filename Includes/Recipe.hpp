@@ -3,6 +3,7 @@
 
 #include "GameStructs.hpp"
 #include "HookEx.hpp"
+#include "ItemSlot.hpp"
 #include "gstd.hpp"
 
 namespace MC3DSPluginFramework {
@@ -24,8 +25,8 @@ struct RecipeData {
     u32 unk1[12]      = {};
     u32 size_x        = 0;
     u32 size_y        = 0;
-    gstd::vector<SlotData> need;
-    gstd::vector<SlotData> res;
+    gstd::vector<ItemSlot> need;
+    gstd::vector<ItemSlot> res;
 };
 
 struct Item {

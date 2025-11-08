@@ -3,8 +3,6 @@
 namespace MC3DSPluginFramework {
 namespace CreativeMenu {
 
-namespace CTRPF = CTRPluginFramework;
-
 struct AddItemData {
     Category category;
     u16 number;
@@ -16,27 +14,27 @@ struct AddItemData {
 static bool Hook_Installed;
 static std::vector<AddItemData> Append_Items;
 
-gstd::vector<SlotData> &GetItemList(void) {
-    return *(gstd::vector<SlotData> *)0xB0D744;
+gstd::vector<ItemSlot> &GetItemList(void) {
+    return *(gstd::vector<ItemSlot> *)0xB0D744;
 }
 
-void SetUpMenuItems(CTRPF::Regs &regs, u32 *sp, CTRPF::HookEx *hook) {
+void SetUpMenuItems(Regs &regs, u32 *sp, HookEx *hook) {
     Function<void>(0x56E450)();    // original function
 
     for (auto &Append_Item : Append_Items) {
-        SlotData item(Append_Item.itemID, 1, Append_Item.dataValue);
-        item.category = (u16)Append_Item.category;
+        ItemSlot item(Append_Item.itemID, 1, Append_Item.dataValue);
+        item.category = Append_Item.category;
         item.number   = Append_Item.number;
 
         if (!Append_Item.enchants.empty())
-            item.Enchant(Append_Item.enchants);
+            item.Enchanting(gstd::vector<EnchantStatus>(Append_Item.enchants.begin(), Append_Item.enchants.end()));
 
         Function<void>(0x56E108)(item);
     }
 }
 
 void InstallHook(void) {
-    static CTRPF::HookEx hook(0x47AEEC, SetUpMenuItems, CTRPF::HookEx::USE_LR_TO_RETURN);
+    static HookEx hook(0x47AEEC, SetUpMenuItems, HookEx::USE_LR_TO_RETURN);
     hook.Enable();
     Hook_Installed = hook.IsEnabled();
 }
