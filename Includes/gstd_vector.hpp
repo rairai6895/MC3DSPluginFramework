@@ -23,6 +23,9 @@ class allocator {
     void deallocate(T *ptr, std::size_t n) {
         gstd::free((void *)ptr);
     }
+
+    bool operator==(const allocator &) const { return true; }
+    bool operator!=(const allocator &) const { return false; }
 };
 
 template <typename T>

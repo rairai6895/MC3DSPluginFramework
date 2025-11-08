@@ -30,15 +30,15 @@ struct RecipeData {
 };
 
 struct Item {
-    u16 itemID;
+    ItemID itemID;
     u8 count;
     u16 dataValue;
     std::vector<EnchantStatus> enchants = {};
 
-    Item(u32 itemID, u8 count, u16 dataValue, const std::vector<EnchantStatus> &enchants = {}) :
+    Item(ItemID itemID, u8 count, u16 dataValue, const std::vector<EnchantStatus> &enchants = {}) :
         itemID(itemID), count(count), dataValue(dataValue), enchants(enchants) {}
 
-    Item(u32 itemID, u8 count, u16 dataValue, const std::initializer_list<EnchantStatus> &enchants) :
+    Item(ItemID itemID, u8 count, u16 dataValue, const std::initializer_list<EnchantStatus> &enchants) :
         itemID(itemID), count(count), dataValue(dataValue), enchants(enchants) {}
 };
 
