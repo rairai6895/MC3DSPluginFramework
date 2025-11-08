@@ -20,9 +20,9 @@ enum Category : u16 {
 };
 
 gstd::vector<ItemSlot> &GetItemList(void);
-void Append(Category category, u16 number, u16 itemID, u16 dataValue);
-void Append(Category category, u16 number, u16 itemID, u16 dataValue, const std::initializer_list<EnchantStatus> &enchants);
-void Append(Category category, u16 number, u16 itemID, u16 dataValue, const std::vector<EnchantStatus> &enchants);
+void Append(Category category, u16 number, ItemID itemID, u16 dataValue);
+void Append(Category category, u16 number, ItemID itemID, u16 dataValue, const std::initializer_list<EnchantStatus> &enchants);
+void Append(Category category, u16 number, ItemID itemID, u16 dataValue, const std::vector<EnchantStatus> &enchants);
 
 };    // namespace CreativeMenu
 

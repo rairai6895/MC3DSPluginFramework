@@ -6,7 +6,7 @@ namespace CreativeMenu {
 struct AddItemData {
     Category category;
     u16 number;
-    u16 itemID;
+    ItemID itemID;
     u16 dataValue;
     std::vector<EnchantStatus> enchants;
 };
@@ -39,21 +39,21 @@ void InstallHook(void) {
     Hook_Installed = hook.IsEnabled();
 }
 
-void Append(Category category, u16 number, u16 itemID, u16 dataValue) {
+void Append(Category category, u16 number, ItemID itemID, u16 dataValue) {
     if (!Hook_Installed)
         InstallHook();
 
     Append_Items.push_back(AddItemData{category, number, itemID, dataValue, {}});
 }
 
-void Append(Category category, u16 number, u16 itemID, u16 dataValue, const std::initializer_list<EnchantStatus> &enchants) {
+void Append(Category category, u16 number, ItemID itemID, u16 dataValue, const std::initializer_list<EnchantStatus> &enchants) {
     if (!Hook_Installed)
         InstallHook();
 
     Append_Items.push_back(AddItemData{category, number, itemID, dataValue, enchants});
 }
 
-void Append(Category category, u16 number, u16 itemID, u16 dataValue, const std::vector<EnchantStatus> &enchants) {
+void Append(Category category, u16 number, ItemID itemID, u16 dataValue, const std::vector<EnchantStatus> &enchants) {
     if (!Hook_Installed)
         InstallHook();
 
