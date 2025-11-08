@@ -14,6 +14,7 @@ struct AppendRecipe {
 
 static bool Hook_Installed;
 static std::vector<AppendRecipe> Append_Recipes;
+static std::mutex mutex;
 
 gstd::vector<RecipeData *> *CreateList(void) {
     return Function<gstd::vector<RecipeData *> *>(0x635CCC)();
@@ -24,10 +25,11 @@ void ResetList(gstd::vector<RecipeData *> *list) {
 }
 
 void SetUpRecipes(Regs &regs, u32 *sp, HookEx *hook) {
+    std::lock_guard<std::mutex> lock(mutex);
     gstd::vector<RecipeData *> *recipeList = (gstd::vector<RecipeData *> *)regs.r0;
     ResetList(recipeList);
 
-    for (auto Append_Recipe : Append_Recipes) {
+    for (auto &Append_Recipe : Append_Recipes) {
         if (RecipeData *newRecipe = gstd::_new<RecipeData>()) {
             newRecipe->vtable   = 0x9A2664;
             newRecipe->category = Append_Recipe.category;
@@ -72,6 +74,7 @@ gstd::vector<RecipeData *> *GetList(void) {
 }
 
 void Append(Category category, u16 num, u32 x, u32 y, const std::vector<Item> &need, const Item &res) {
+    std::lock_guard<std::mutex> lock(mutex);
     if (!Hook_Installed)
         InstallHook();
 

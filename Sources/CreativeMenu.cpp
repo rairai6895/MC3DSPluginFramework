@@ -13,12 +13,14 @@ struct AddItemData {
 
 static bool Hook_Installed;
 static std::vector<AddItemData> Append_Items;
+static std::mutex mutex;
 
 gstd::vector<ItemSlot> &GetItemList(void) {
     return *(gstd::vector<ItemSlot> *)0xB0D744;
 }
 
 void SetUpMenuItems(Regs &regs, u32 *sp, HookEx *hook) {
+    std::lock_guard<std::mutex> lock(mutex);
     Function<void>(0x56E450)();    // original function
 
     for (auto &Append_Item : Append_Items) {
@@ -40,6 +42,7 @@ void InstallHook(void) {
 }
 
 void Append(Category category, u16 number, ItemID itemID, u16 dataValue) {
+    std::lock_guard<std::mutex> lock(mutex);
     if (!Hook_Installed)
         InstallHook();
 
@@ -47,6 +50,7 @@ void Append(Category category, u16 number, ItemID itemID, u16 dataValue) {
 }
 
 void Append(Category category, u16 number, ItemID itemID, u16 dataValue, const std::initializer_list<EnchantStatus> &enchants) {
+    std::lock_guard<std::mutex> lock(mutex);
     if (!Hook_Installed)
         InstallHook();
 
@@ -54,6 +58,7 @@ void Append(Category category, u16 number, ItemID itemID, u16 dataValue, const s
 }
 
 void Append(Category category, u16 number, ItemID itemID, u16 dataValue, const std::vector<EnchantStatus> &enchants) {
+    std::lock_guard<std::mutex> lock(mutex);
     if (!Hook_Installed)
         InstallHook();
 
