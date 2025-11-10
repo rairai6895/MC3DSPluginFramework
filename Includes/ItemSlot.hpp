@@ -39,6 +39,8 @@ class ItemSlot {
     gstd::vector<EnchantStatus> ReadEnchant(void);
     void Enchanting(const gstd::vector<EnchantStatus> &enchants);
 
+    gstd::string GetName(void);
+
     u8 count;
     u8 unk1;
     u16 dataValue;

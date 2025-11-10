@@ -64,4 +64,10 @@ void ItemSlot::Enchanting(const gstd::vector<EnchantStatus> &enchants) {
     Function<void>(0x1D1670)(this, &args);
 }
 
+gstd::string ItemSlot::GetName(void) {
+    gstd::string res;
+    Function<void>(0x6B1840)(&res, this);
+    return res;
+}
+
 }    // namespace MC3DSPluginFramework
