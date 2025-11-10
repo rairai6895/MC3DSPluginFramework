@@ -30,36 +30,34 @@ void SetUpRecipes(Regs &regs, u32 *sp, HookEx *hook) {
     ResetList(recipeList);
 
     for (auto &Append_Recipe : Append_Recipes) {
-        if (RecipeData *newRecipe = gstd::_new<RecipeData>()) {
-            newRecipe->vtable   = 0x9A2664;
-            newRecipe->category = Append_Recipe.category;
-            newRecipe->num      = Append_Recipe.num;
-            *newRecipe->unk1    = {};
-            newRecipe->size_x   = Append_Recipe.size_x;
-            newRecipe->size_y   = Append_Recipe.size_y;
+        gstd::vector<ItemSlot> need;
+        need.reserve(std::max<u32>(Append_Recipe.size_x, 1) * std::max<u32>(Append_Recipe.size_y, 1));
+        for (auto &data : Append_Recipe.need) {
+            ItemSlot item(data.itemID, data.count, data.dataValue);
 
-            gstd::vector<ItemSlot> need;
-            need.reserve(std::max<u32>(Append_Recipe.size_x, 1) * std::max<u32>(Append_Recipe.size_y, 1));
-            for (auto &data : Append_Recipe.need) {
-                ItemSlot item(data.itemID, data.count, data.dataValue);
+            if (!data.enchants.empty())
+                item.Enchanting(gstd::vector<EnchantStatus>(data.enchants.begin(), data.enchants.end()));
 
-                if (!data.enchants.empty())
-                    item.Enchanting(gstd::vector<EnchantStatus>(data.enchants.begin(), data.enchants.end()));
-
-                need.push_back(std::move(item));
-            }
-
-            newRecipe->need = std::move(need);
-
-            ItemSlot item(Append_Recipe.res.itemID, Append_Recipe.res.count, Append_Recipe.res.dataValue);
-
-            if (!Append_Recipe.res.enchants.empty())
-                item.Enchanting(gstd::vector<EnchantStatus>(Append_Recipe.res.enchants.begin(), Append_Recipe.res.enchants.end()));
-
-            newRecipe->res = std::move(gstd::vector<ItemSlot>({std::move(item)}));
-
-            recipeList->push_back(newRecipe);
+            need.push_back(std::move(item));
         }
+
+        ItemSlot res(Append_Recipe.res.itemID, Append_Recipe.res.count, Append_Recipe.res.dataValue);
+
+        if (!Append_Recipe.res.enchants.empty())
+            res.Enchanting(gstd::vector<EnchantStatus>(Append_Recipe.res.enchants.begin(), Append_Recipe.res.enchants.end()));
+
+        RecipeData *newRecipe = gstd::_new<RecipeData>(
+            RecipeData(
+                Append_Recipe.category,
+                Append_Recipe.num,
+                Append_Recipe.size_x,
+                Append_Recipe.size_y,
+                std::move(need),
+                std::move(gstd::vector<ItemSlot>({std::move(res)}))
+            )
+        );
+
+        recipeList->push_back(newRecipe);
     }
 }
 

@@ -5,6 +5,7 @@
 #include "HookEx.hpp"
 #include "ItemSlot.hpp"
 #include "gstd.hpp"
+#include "mutex"
 
 namespace MC3DSPluginFramework {
 namespace Recipe {
@@ -27,6 +28,9 @@ struct RecipeData {
     u32 size_y        = 0;
     gstd::vector<ItemSlot> need;
     gstd::vector<ItemSlot> res;
+
+    RecipeData(Category category, u16 num, u32 size_x, u32 size_y, gstd::vector<ItemSlot> &&need, gstd::vector<ItemSlot> &&res) :
+        category(category), num(num), size_x(size_x), size_y(size_y), need(std::move(need)), res(std::move(res)) {}
 };
 
 struct Item {
