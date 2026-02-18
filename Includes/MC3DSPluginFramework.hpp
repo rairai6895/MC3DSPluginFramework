@@ -1,23 +1,35 @@
-#ifndef MC3DSPLUGINFRAMEWORK_HPP
-#define MC3DSPLUGINFRAMEWORK_HPP
+#pragma once
 
-#include "Chunk.hpp"
-#include "CreativeMenu.hpp"
-#include "Dropper.hpp"
-#include "EntityClass.hpp"
-#include "GameController.hpp"
-#include "GameHelper.hpp"
-#include "GameNotify.hpp"
-#include "GameSound.hpp"
-#include "GameStructs.hpp"
-#include "GameSystem.hpp"
-#include "Inventory.hpp"
-#include "ItemSlot.hpp"
-#include "PlayerClass.hpp"
-#include "Recipe.hpp"
-#include "Spawn.hpp"
-#include "TextCode.hpp"
-#include "WorldClass.hpp"
-#include "gstd.hpp"
+#include "Minecraft/Common/Util/Util.hpp"
+#include "Minecraft/Common/World/Entity/Entity.hpp"
+#include "Minecraft/Common/World/Entity/EntityClass.hpp"
+#include "Minecraft/Common/World/Entity/Player/Player.hpp"
+#include "Minecraft/Common/World/Entity/Spawn.hpp"
+#include "Minecraft/Common/World/Item/CreativeMenu.hpp"
+#include "Minecraft/Common/World/Item/Inventory.hpp"
+#include "Minecraft/Common/World/Item/ItemInstance.hpp"
+#include "Minecraft/Common/World/Item/Recipe.hpp"
+#include "Minecraft/Common/World/Level/Block.hpp"
+#include "Minecraft/Common/World/Level/BlockSource.hpp"
+#include "Minecraft/Common/World/Level/Level.hpp"
+#include "Minecraft/Helper/GameStructs.hpp"
+#include "Minecraft/Other/Achievement.hpp"
+#include "Minecraft/Other/Dropper.hpp"
+#include "Minecraft/Other/GameController.hpp"
+#include "Minecraft/Other/GameHelper.hpp"
+#include "Minecraft/Other/GameHooks.hpp"
+#include "Minecraft/Other/GameSound.hpp"
+#include "Minecraft/Other/Language.hpp"
+#include "Minecraft/Other/TextCode.hpp"
+#include "Minecraft/Other/gsvc.hpp"
+#include "Minecraft/gstd/gstd.hpp"
 
-#endif
+namespace MC3DSPluginFramework
+{
+
+    inline gstd::string GameModeToString(GameModes mode)
+    {
+        return reinterpret_cast<gstd::string (*)(GameModes)>(0x1C99C0)(mode);
+    }
+
+}    // namespace MC3DSPluginFramework
