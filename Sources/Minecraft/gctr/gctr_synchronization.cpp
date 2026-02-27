@@ -43,6 +43,8 @@ namespace MC3DSPluginFramework::gctr
         }
     }
 
+    // 本来はクラス形式ではない。
+    // ゲーム内ではmCounterに初期値として0xFFFFFFFFが書き込まれる処理がある
     // FUN_0x12314C
     RecursiveLock::RecursiveLock() :
         mLock(), mThread_tag(0), mCounter(0)

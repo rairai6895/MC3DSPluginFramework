@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Minecraft/Common/World/Entity/Abilities.hpp"
-#include "Minecraft/Common/World/Entity/Attribute.hpp"
+#include "Minecraft/Common/World/Attribute/AttributeInstance.hpp"
 #include "Minecraft/Common/World/Entity/DamageSource.hpp"
 #include "Minecraft/Common/World/Entity/Effects.hpp"
+#include "Minecraft/Common/World/Entity/Player/Abilities.hpp"
 #include "Minecraft/Common/World/Entity/SynchedEntityData.hpp"
 #include "Minecraft/Common/World/Item/ItemInstance.hpp"
 #include "Minecraft/Common/World/Level/BlockSource.hpp"
@@ -53,7 +53,7 @@ namespace MC3DSPluginFramework
         Vec3_Float &Velocity(void) const;
         Vec3_Float &Position(void) const;
         Vec3_Int Position_Int(void) const;
-        Attribute *GetAttribute(const Attribute::Key &key) const;
+        AttributeInstance *GetAttributeInstance(const Attribute &key) const;
         bool IsEffected(Effect *effect) const;
         EffectData &GetEffectData(Effect *effect) const;
         gstd::vector<EffectData> &GetEffectData(void) const;
@@ -84,7 +84,7 @@ namespace MC3DSPluginFramework
 
         float &AirMoveSpeed(void) const;
 
-        AbilityManager *GetAbilityManager(void) const;
+        Abilities *GetAbilityManager(void) const;
         void SetGameMode(GameModes mode);
         GameModes GetGameMode(void) const;
         EntityId GetId(void) const;

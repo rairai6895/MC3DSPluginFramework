@@ -3,7 +3,7 @@
 namespace MC3DSPluginFramework
 {
     // FUN_0x6954E4
-    void Block::scheduleNeighborTick(BlockSource *bs, const Vec3_Int &pos)
+    void Block::scheduleNeighborTick(BlockSource *bs, const BlockPos &pos)
     {
         BlockPos blockPos;
         Block *target;

@@ -4,6 +4,7 @@
 #include "Minecraft/Common/Thread.hpp"
 #include "Minecraft/Common/World/Level/Block.hpp"
 #include "Minecraft/Common/World/Level/BlockEntity/BlockEntity.hpp"
+#include "Minecraft/Common/World/Level/Chunk/ChunkRefCount.hpp"
 #include "Minecraft/Common/World/Level/Chunk/LevelChunk.hpp"
 #include "Minecraft/Common/World/Level/ChunkPos.hpp"
 #include "Minecraft/Common/World/Level/Dimension/Dimension.hpp"

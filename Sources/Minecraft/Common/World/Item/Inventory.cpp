@@ -67,9 +67,9 @@ namespace MC3DSPluginFramework
             return res;
         }
 
-        size_t Count(Item *itemInstance, u16 dataValue, bool useDataValue)
+        size_t Count(Item *item, u16 dataValue, bool useDataValue)
         {
-            std::vector<ItemInstance *> find = Search_Vec(itemInstance, dataValue, useDataValue);
+            std::vector<ItemInstance *> find = Search_Vec(item, dataValue, useDataValue);
             size_t res                       = 0;
             for (auto slot : find)
                 res += slot->mCount;

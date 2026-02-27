@@ -1,10 +1,13 @@
 #pragma once
 
-#define WEAK __attribute__(weak)
+#define WEAK __attribute__((weak))
 #define WEAK_ALIAS(x) __attribute__((weak, alias(#x)))
 
+#define MS(x) ((x) * 1000000ULL)
+
 #define MACRO_MAKE_PAIR(name, T1, field1, T2, field2)            \
-    struct name {                                                \
+    struct name                                                  \
+    {                                                            \
         T1 field1;                                               \
         T2 field2;                                               \
                                                                  \

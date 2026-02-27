@@ -8,17 +8,20 @@ HookEx::HookEx() :
     mReturnAddress(0),
     mOriginalInstr(0),
     mMode(0),
+    mArgs(nullptr),
     mSlot(nullptr),
-    mIsEnabled(false),
-    mIsNormal(false) {
+    mIsEnabled(false)
+{
 }
 
-HookEx::~HookEx() {
+HookEx::~HookEx()
+{
     if (mIsEnabled)
         Disable();
 }
 
-bool HookEx::InitMitm(u32 targetAddress, u32 callbackAddress) {
+bool HookEx::InitMitm(u32 targetAddress, u32 callbackAddress)
+{
     if (!mIsEnabled) {
         mTargetAddress         = targetAddress;
         mOriginalInstr         = *(u32 *)targetAddress;
@@ -27,13 +30,13 @@ bool HookEx::InitMitm(u32 targetAddress, u32 callbackAddress) {
         mAfterCallbackAddress  = 0;
         mReturnAddress         = targetAddress + 4;
         mMode                  = MITM_MODE;
-        mIsNormal              = true;
         return true;
     }
     return false;
 }
 
-bool HookEx::InitSubWrap(u32 targetAddress, u32 beforeCallbackAddress, u32 afterCallbackAddress) {
+bool HookEx::InitSubWrap(u32 targetAddress, u32 beforeCallbackAddress, u32 afterCallbackAddress)
+{
     if (!mIsEnabled) {
         mTargetAddress         = targetAddress;
         mOriginalInstr         = *(u32 *)targetAddress;
@@ -42,13 +45,13 @@ bool HookEx::InitSubWrap(u32 targetAddress, u32 beforeCallbackAddress, u32 after
         mAfterCallbackAddress  = afterCallbackAddress;
         mReturnAddress         = targetAddress + 4;
         mMode                  = WRAP_SUB;
-        mIsNormal              = true;
         return true;
     }
     return false;
 }
 
-bool HookEx::InitRoutine(u32 targetAddress, Routine callbackAddress, u32 routineMode) {
+bool HookEx::InitRoutine(u32 targetAddress, Routine callbackAddress, u32 routineMode)
+{
     if (!mIsEnabled) {
         mTargetAddress         = targetAddress;
         mOriginalInstr         = *(u32 *)targetAddress;
@@ -57,13 +60,13 @@ bool HookEx::InitRoutine(u32 targetAddress, Routine callbackAddress, u32 routine
         mAfterCallbackAddress  = 0;
         mReturnAddress         = targetAddress + 4;
         mMode                  = ROUTINE | routineMode;
-        mIsNormal              = true;
         return true;
     }
     return false;
 }
 
-void HookEx::Enable(void) {
+void HookEx::Enable()
+{
     if (!mIsEnabled) {
         mOriginalInstr = *(u32 *)mTargetAddress;
 
@@ -96,7 +99,8 @@ void HookEx::Enable(void) {
     }
 }
 
-void HookEx::Disable(void) {
+void HookEx::Disable()
+{
     if (mIsEnabled) {
         *(u32 *)mTargetAddress = mOriginalInstr;
         mSlot->FreeSlot(this);
@@ -106,31 +110,34 @@ void HookEx::Disable(void) {
     }
 }
 
-void HookEx::SetArgs(void *args) {
+void HookEx::SetArgs(void *args)
+{
     mArgs = args;
 }
 
-HookEx::Context HookEx::GetContext(void) {
-    Context ctx;
-    ctx.targetAddress = mTargetAddress;
-    ctx.args          = mArgs;
-    return ctx;
+void *HookEx::GetArgs()
+{
+    return mArgs;
 }
 
-bool HookEx::IsEnabled(void) {
+bool HookEx::IsEnabled()
+{
     return mIsEnabled;
 }
 
-u32 HookEx::CheckAddress(u32 address) {
+u32 HookEx::CheckAddress(u32 address)
+{
     return address >= 0x100000 ? address : 0;
 }
 
-void HookEx::ClearCache(void) {
+void HookEx::ClearCache()
+{
     svcInvalidateEntireInstructionCache();
     svcFlushProcessDataCache(CUR_PROCESS_HANDLE, mTargetAddress, 4);
 }
 
-u32 HookEx::DecodeARMBranch(u32 from) {
+u32 HookEx::DecodeARMBranch(u32 from)
+{
     s32 code = (*(u32 *)from & 0x00FFFFFF) << 2;
     if (code & 0x00800000)
         code |= 0xFF000000;
@@ -138,13 +145,15 @@ u32 HookEx::DecodeARMBranch(u32 from) {
     return from + 8 + code;
 }
 
-void HookEx::SetBranch(u32 from, u32 to) {
+void HookEx::SetBranch(u32 from, u32 to)
+{
     s32 code     = (s32)(to - (from + 8));
     code         = (code >> 2) & 0x00FFFFFF;
     *(u32 *)from = 0xEA000000 | code;
 }
 
-void HookEx::SetBranchLink(u32 from, u32 to) {
+void HookEx::SetBranchLink(u32 from, u32 to)
+{
     s32 code     = (s32)(to - (from + 8));
     code         = (code >> 2) & 0x00FFFFFF;
     *(u32 *)from = 0xEB000000 | code;

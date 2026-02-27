@@ -1,49 +1,21 @@
 #pragma once
 
-#include "Minecraft/Common/Client/Game/MinecraftGame.hpp"
-#include "Minecraft/Common/Client/Gui/Screens/BaseScreen.hpp"
-#include "Minecraft/Common/Client/Gui/Screens/SystemMessagesScreen.hpp"
+#include "Minecraft/Common/Util/BoxedPtr.hpp"
 
 namespace MC3DSPluginFramework
 {
+    class C_Screen;
+    class MinecraftGame;
+    class ClientInstance;
+
     class ScreenChooser
     {
     public:
-        BaseScreen *createContainerCreativeScreen(u8 startTab)
-        {
-            if (void *mem = gstd::malloc(0x664))
-                return reinterpret_cast<BaseScreen *(*)(void *, MinecraftGame *, ClientInstance *, u8)>(0x45C338)(mem, mMinecraftGame, mClientInstance, startTab);
-
-            return nullptr;
-        }
-
-        BaseScreen *createContanerInventoryScreen(bool creative, bool workbench, bool unknown)
-        {
-            if (void *mem = gstd::malloc(0x198)) {
-                u32 data[3] = {};
-                if (workbench) {
-                    data[0] = 0;
-                    data[1] = 0x49;
-                    data[2] = 6;
-                }
-                return reinterpret_cast<BaseScreen *(*)(void *, MinecraftGame *, ClientInstance *, bool, u32 *, bool)>(0x42F1DC)(mem, mMinecraftGame, mClientInstance, creative, data, unknown);
-            }
-
-            return nullptr;
-        }
-
-        void _pushScreen(Util::BoxedPtr::Shared<BaseScreen> screen, bool unknown);
-
-        void openPauseMenu(void)
-        {
-            reinterpret_cast<void (*)(ScreenChooser *)>(0x23B758)(this);
-        }
-
-        // FUN_0x23E50C
-        void initSystemMessagesScreen(void)
-        {
-            _pushScreen(new SystemMessagesScreen(mMinecraftGame, mClientInstance, 0), false);
-        }
+        C_Screen *createContainerCreativeScreen(u8 startTab);
+        C_Screen *createContanerInventoryScreen(bool creative, bool workbench, bool unknown);
+        void _pushScreen(Util::BoxedPtr::Shared<C_Screen> screen, bool unknown);
+        void openPauseMenu(void);
+        void initSystemMessagesScreen(void);
 
     private:
         MinecraftGame *mMinecraftGame;

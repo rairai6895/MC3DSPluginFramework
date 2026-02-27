@@ -22,7 +22,7 @@ namespace MC3DSPluginFramework::Util
         return (hash * 9 ^ hash * 9 >> 11) * 32769;
     }
 
-    NAKED inline gstd::string format(const char *fmt, ...)
+    NAKED inline gstd::string format(const char *format, ...)
     {
         asm volatile("ldr pc, =0x581E84 \n");
     }

@@ -1,4 +1,4 @@
-#include "Minecraft/Common/World/Item/ItemClass.hpp"
+#include "Minecraft/Common/World/Item/Item.hpp"
 
 namespace MC3DSPluginFramework
 {

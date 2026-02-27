@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Minecraft/Common/Client/Gui/Screens/BaseScreen.hpp"
+#include "C_Screen.hpp"
 
 namespace MC3DSPluginFramework
 {
     // "C:\\Projects\\MC\\3DSPostLaunchPatch85\\handheld\\src\\common\\client\\gui\\screens\\InGamePlayScreen.cpp"
-    class InGamePlayScreen : public BaseScreen
+    class InGamePlayScreen : public C_Screen
     {
     public:
         ~InGamePlayScreen() override;

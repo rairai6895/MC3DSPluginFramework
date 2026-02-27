@@ -2,6 +2,7 @@
 
 #include "Minecraft/Common/World/Entity/DamageSource.hpp"
 #include "Minecraft/Common/World/Entity/EntityClass.hpp"
+
 #include "Minecraft/Common/World/Level/Block.hpp"
 #include "Minecraft/Common/World/Phys/AABB.hpp"
 #include "Minecraft/Helper/Structs.hpp"
@@ -17,11 +18,21 @@ namespace MC3DSPluginFramework
             return *(Level **)((u32)this + 0x1A0);
         }
 
+        Dimension *getDimension()
+        {
+            return nullptr;
+        }
+
+        Vec3 getAttachPos(u32 unknown)
+        {
+            return reinterpret_cast<Vec3 (*)(_Entity *, u32)>(0x723714)(this, unknown);
+        }
+
     public:
         virtual void Unknown1();    // +0x0 0x5F20C8
         virtual void Unknown2();    // +0x4 0x600D28 setChunkPos?
         virtual void Unknown3();    // +0x8 0x4EA100
-        virtual void initializeComponents(u32 unknown);    // +0xC
+        virtual void initializeComponents(bool unknown);    // +0xC
         virtual void Unknown5();    // +0x10 0x5ECEA4
         virtual void Unknown6();    // +0x14 0x713A24
         virtual void Unknown7() = delete;    // +0x18
@@ -124,29 +135,113 @@ namespace MC3DSPluginFramework
         virtual void Unknown72();    // +0x188
         virtual void Unknown73();    // +0x18C
         virtual void Unknown74();    // +0x190
+        virtual void Unknown75();    // +0x194
+        virtual void Unknown76();    // +0x198
+
+        // +0x19C
+        virtual float Unknown77()
+        {
+            return 0.1f;
+        }
+
+        virtual void Unknown78();    // +0x1A0
+        virtual void Unknown79();    // +0x1A4
+        virtual void Unknown80();    // +0x1A8
+        virtual void Unknown81();    // +0x1AC
+        virtual void Unknown82();    // +0x1B0
+        virtual void Unknown83();    // +0x1B4
+
+        virtual void Unknown84() = delete;    // +0x1B8
+        virtual void Unknown85() = delete;    // +0x1BC
+
+        virtual void Unknown86();    // +0x1C0
+        virtual void Unknown87();    // +0x1C4
+        virtual void Unknown88();    // +0x1C8
+        virtual void Unknown89();    // +0x1CC
+        virtual void Unknown90();    // +0x1D0
+
+        virtual void Unknown91() = 0;    // +0x1D4
+
+        virtual void Unknown92();    // +0x1D8
+        virtual void Unknown93();    // +0x1DC
+        virtual void Unknown94();    // +0x1E0
+        virtual void Unknown95();    // +0x1E4
+        virtual void Unknown96();    // +0x1E8
+        virtual void Unknown97();    // +0x1EC
+        virtual void Unknown98();    // +0x1F0
+        virtual void Unknown99();    // +0x1F4
+        virtual void Unknown100();    // +0x1F8
+        virtual void Unknown101();    // +0x1FC
+        virtual void Unknown102();    // +0x200
+
+        virtual void Unknown103() = delete;    // +0x204
+
+        virtual void Unknown104();    // +0x208
+        virtual void Unknown105();    // +0x20C
+        virtual void Unknown106();    // +0x210
+        virtual void Unknown107();    // +0x214
+        virtual void Unknown108();    // +0x218
+        virtual void Unknown109();    // +0x21C
+        virtual void Unknown110();    // +0x220
+        virtual void Unknown111();    // +0x224
+        virtual void Unknown112();    // +0x228
+
+        virtual void Unknown113() = delete;    // +0x22C
+        virtual void Unknown114() = delete;    // +0x230
+
+        virtual void Unknown115();    // +0x234
+        virtual void Unknown116();    // +0x238
+        virtual void sendMotionPacketIfNeeded();    // +0x23C
+        virtual void Unknown118();    // +0x240
+        virtual void Unknown119();    // +0x244
+
+        virtual void Unknown120() = delete;    // +0x248
+
+        virtual void Unknown121();    // +0x24C
+        virtual void Unknown122();    // +0x250
+
+        virtual void Unknown123() = delete;    // +0x254
+        virtual void Unknown124() = delete;    // +0x258
+        virtual void Unknown125() = delete;    // +0x25C
+        virtual void Unknown126() = delete;    // +0x260
+        virtual void Unknown127() = delete;    // +0x264
+
+        virtual void Unknown128();    // +0x268
+        virtual void Unknown129();    // +0x26C
+        virtual void Unknown130();    // +0x270
+        virtual void Unknown131();    // +0x274
+        virtual void Unknown132();    // +0x278
+        virtual void Unknown133();    // +0x27C
+        virtual void Unknown134();    // +0x280
+        virtual void Unknown135();    // +0x284
+        virtual void Unknown136();    // +0x288
+        virtual void Unknown137();    // +0x28C
+        virtual void Unknown138();    // +0x290
+
+        virtual void Unknown139() = delete;    // +0x294
+
+        virtual void Unknown140();    // +0x298
+        virtual void Unknown141();    // +0x29C
+        virtual void Unknown142();    // +0x2A0
+        virtual void Unknown143();    // +0x2A4
+        virtual void Unknown144();    // +0x2A8
+        virtual void Unknown145();    // +0x2AC
+        virtual void Unknown146();    // +0x2B0
+        virtual void Unknown147();    // +0x2B4
+        virtual void Unknown148();    // +0x2B8
+        virtual void Unknown149();    // +0x2BC
+        virtual void Unknown150();    // +0x2C0
+        virtual void Unknown151();    // +0x2C4
+        virtual void Unknown152();    // +0x2C8
+        virtual void Unknown153();    // +0x2CC
+        virtual void Unknown154();    // +0x2D0
+        virtual void Unknown155();    // +0x2D4
+        virtual void _removeRider();    // +0x2D8
+
+        // Entity::
 
     private:
         // mLevel +0x1A0
-    };
-
-    // vtable 9c6e24
-    class _Mob : public _Entity
-    {
-    public:
-        ~_Mob() override;
-
-    private:
-    };
-
-    // vtable 0x99C31C
-    class _Player : public _Mob
-    {
-    public:
-        // void initializeComponents(u32 unknown) override;
-
-        ~_Player() override;
-
-    private:
     };
 
     class EntityBase

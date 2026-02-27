@@ -15,7 +15,30 @@ namespace MC3DSPluginFramework::Util::BoxedPtr
     public:
         friend Weak<T>;
 
-        Shared(T *ptr)
+        Shared() noexcept
+        {
+            mPtr  = nullptr;
+            mBase = nullptr;
+
+            /*
+            if (ControllBlock *base = ControllBlock::alloc()) {
+                base->lock();
+
+                if (base->isAlloced()) {
+                    mPtr  = nullptr;
+                    mBase = base;
+                    base->strongReference();
+                }
+
+                base->unlock();
+            }
+            */
+        }
+
+        Shared(std::nullptr_t) noexcept :
+            Shared() {}
+
+        explicit Shared(T *ptr)
         {
             mPtr  = nullptr;
             mBase = nullptr;
@@ -33,7 +56,45 @@ namespace MC3DSPluginFramework::Util::BoxedPtr
             }
         }
 
+        template <typename O, typename = std::enable_if_t<std::is_convertible_v<O *, T *>>>
+        Shared(gstd::unique_ptr<O> &&unique)
+        {
+            mPtr  = nullptr;
+            mBase = nullptr;
+
+            if (ControllBlock *base = ControllBlock::alloc()) {
+                base->lock();
+
+                if (base->isAlloced()) {
+                    mPtr  = unique.release();
+                    mBase = base;
+                    base->strongReference();
+                }
+
+                base->unlock();
+            }
+        }
+
         Shared(const Shared &other)
+        {
+            this->mPtr  = nullptr;
+            this->mBase = nullptr;
+
+            if (other.mBase) {
+                other.mBase->lock();
+
+                if (other.mBase->isAlloced()) {
+                    this->mPtr  = other.mPtr;
+                    this->mBase = other.mBase;
+                    other.mBase->strongReference();
+                }
+
+                other.mBase->unlock();
+            }
+        }
+
+        template <typename O, typename = std::enable_if_t<std::is_convertible_v<O *, T *>>>
+        Shared(Shared<O> &&other)
         {
             this->mPtr  = nullptr;
             this->mBase = nullptr;
@@ -49,6 +110,9 @@ namespace MC3DSPluginFramework::Util::BoxedPtr
 
                 other.mBase->unlock();
             }
+
+            other.mPtr  = nullptr;
+            other.mBase = nullptr;
         }
 
         Shared(const Weak<T> &weak)
@@ -93,11 +157,13 @@ namespace MC3DSPluginFramework::Util::BoxedPtr
 
             if (base) {
                 base->lock();
-                if (base->mAlloced != false) {
+
+                if (base->mAlloced) {
                     mPtr  = ptr;
                     mBase = base;
                     base->strongReference();
                 }
+
                 base->unlock();
             }
 
@@ -123,12 +189,17 @@ namespace MC3DSPluginFramework::Util::BoxedPtr
             return *this;
         }
 
-        bool unique()
+        bool unique() const noexcept
         {
             return mBase->isAlloced() && mBase->strongCount() == 1 && mBase->weakCount() == 1;
         }
 
-        T *operator->(void) const
+        explicit operator bool() const noexcept
+        {
+            return mBase && mPtr;
+        }
+
+        T *operator->() const
         {
             if (!mBase) {
                 LOG("Cannot dereference an empty pointer", mBase, 0);
@@ -141,7 +212,7 @@ namespace MC3DSPluginFramework::Util::BoxedPtr
             return mPtr;
         }
 
-        T &operator*(void) const
+        T &operator*() const
         {
             if (!mBase) {
                 LOG("Cannot dereference an empty pointer", mBase, 0);
@@ -154,10 +225,28 @@ namespace MC3DSPluginFramework::Util::BoxedPtr
             return *mPtr;
         }
 
+        T *get() const noexcept
+        {
+            return mPtr;
+        }
+
     private:
         T *mPtr;
         ControllBlock *mBase;
     };
+
+    /*
+    template <typename T, typename... Args>
+    inline Shared<T> make_shared(Args &&...args)
+    {
+        void *mem = gstd::malloc(sizeof(T));
+
+        if (mem)
+            new (mem) T(std::forward<Args>(args)...);
+
+        return Shared<T>(reinterpret_cast<T *>(mem));
+    }
+    */
 
     // C:\\Projects\\MC\\3DSPostLaunchPatch85\\handheld\\project\\3DS\\..\\..\\src\\common\\util/BoxedPtr.h
     template <typename T>

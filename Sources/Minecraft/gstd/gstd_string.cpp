@@ -5,9 +5,24 @@ namespace MC3DSPluginFramework::gstd
 
     const string string::null("");
 
+    int string::compare(const string &other) const
+    {
+        if (int r = memcmp(mStr, other.mStr, std::min(this->size(), other.size())))
+            return r;
+
+        if (this->size() < other.size())
+            return -1;
+
+        if (this->size() > other.size())
+            return 1;
+
+        return 0;
+    }
+
     bool string::operator==(const string &other) const
     {
-        return (strcmp(mStr, other.mStr) == 0);
+        // return (strcmp(mStr, other.mStr) == 0);
+        return this->compare(other) == 0 && this->length() == other.length();
     }
 
     bool string::operator==(const char *other) const
@@ -15,33 +30,9 @@ namespace MC3DSPluginFramework::gstd
         return (strcmp(mStr, other) == 0);
     }
 
-    bool string::operator!=(const string &other) const
-    {
-        return !(*this == other);
-    }
-
-    bool string::operator!=(const char *other) const
-    {
-        return !(*this == other);
-    }
-
-    int string::compare(const string &other) const
-    {
-        if (int r = memcmp(mStr, other.mStr, std::min(size(), other.size())))
-            return r;
-
-        if (size() < other.size())
-            return -1;
-
-        if (size() > other.size())
-            return 1;
-
-        return 0;
-    }
-
     bool string::operator<(const string &other) const
     {
-        return compare(other) < 0;
+        return this->compare(other) < 0;
     }
 
     string string::operator+(const string &other) const

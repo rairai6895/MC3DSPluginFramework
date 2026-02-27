@@ -89,7 +89,12 @@ namespace MC3DSPluginFramework::gstd
     template <typename T, typename... Args>
     inline gstd::unique_ptr<T> make_unique(Args &&...args)
     {
-        return gstd::unique_ptr<T>(gstd::_new<T>(T(std::forward<Args>(args)...)));
+        void *mem = gstd::malloc(sizeof(T));
+
+        if (mem)
+            new (mem) T(std::forward<Args>(args)...);
+
+        return gstd::unique_ptr<T>(reinterpret_cast<T *>(mem));
     }
 
 }    // namespace MC3DSPluginFramework::gstd

@@ -53,9 +53,9 @@ namespace MC3DSPluginFramework
         return *(TargetType *)offset(0x248);
     }
 
-    Vec3_Int &Level::targetBlockPos(void) const
+    BlockPos &Level::targetBlockPos(void) const
     {
-        return *(Vec3_Int *)offset(0x250);
+        return *(BlockPos *)offset(0x250);
     }
 
     GameRules &Level::getGameRules(void) const

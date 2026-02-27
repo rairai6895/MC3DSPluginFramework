@@ -67,7 +67,7 @@ namespace MC3DSPluginFramework
         u32 &seed(void) const;
         Vec3_Int &spawnCoords(void) const;
         TargetType getTargetType(void) const;
-        Vec3_Int &targetBlockPos(void) const;
+        BlockPos &targetBlockPos(void) const;
         GameRules &getGameRules(void) const;
 
         void addTerrainParticle(const Vec3_Int &pos, const BlockData &block, const Vec3_Float &velocity, int unknown)

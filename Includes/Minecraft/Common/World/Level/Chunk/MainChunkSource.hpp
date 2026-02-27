@@ -2,7 +2,6 @@
 
 #include "Minecraft/Common/World/Level/BlockPos.hpp"
 #include "Minecraft/Common/World/Level/Chunk/ChunkSource.hpp"
-#include "Minecraft/Common/World/Level/Chunk/LevelChunk.hpp"
 
 namespace MC3DSPluginFramework
 {
@@ -24,16 +23,35 @@ namespace MC3DSPluginFramework
 
     public:
         ~MainChunkSource() override;
-        LevelChunk *getChunk(const ChunkPos &pos) override;
-        LevelChunk *requestChunk(const BlockPos &pos, u32 unknown) override;
+
+        LevelChunk *getChunk(const ChunkPos &pos) override
+        {
+            auto it = mStoredChunks.find(pos);
+
+            if (it != mStoredChunks.end())
+                return it->second.get();
+
+            return nullptr;
+        }
+
+        LevelChunk *requestChunk(const ChunkPos &pos, u32 unknown) override;
         bool releaseChunk(LevelChunk *chunk) override;
+
         void acquireDiscarded() override;
-        gstd::map<Vec3_Int, LevelChunk *> &getStoredChunks() override;
-        void Unknown7() override;
+
+        gstd::map<ChunkPos, ChunkRefCount> &getStoredChunks() override
+        {
+            return mStoredChunks;
+        }
+
+        void Unknown8() override
+        {
+            mParent->Unknown8();
+        }
 
     private:
         // vtable 0x9AFB28
 
-        gstd::map<Vec3_Int, LevelChunk *> mStoredChunks;
+        gstd::map<ChunkPos, ChunkRefCount> mStoredChunks;
     };
 }    // namespace MC3DSPluginFramework

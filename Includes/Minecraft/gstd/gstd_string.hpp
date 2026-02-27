@@ -38,7 +38,7 @@ namespace MC3DSPluginFramework::gstd
         {
         public:
             // FUN_0x2FF520
-            void reference(void)
+            void reference()
             {
                 if (this != null)
                     mRefcount++;
@@ -144,28 +144,29 @@ namespace MC3DSPluginFramework::gstd
         // FUN_0x2FEBBC
         ~string() { this->_destroy(); }
 
-        const char *c_str(void) const { return mStr; }
+        const char *c_str() const { return mStr; }
 
-        u32 refcount(void) const { return this->get_header().mRefcount; }
+        u32 refcount() const { return this->get_header().mRefcount; }
 
-        size_t assigned(void) const { return this->get_header().mCapacity; }
+        size_t assigned() const { return this->get_header().mCapacity; }
 
-        size_t size(void) const { return this->get_header().mSize; }
+        size_t size() const { return this->get_header().mSize; }
 
-        bool empty(void) const { return !this->size(); }
+        // ゲーム内ではlengthが使われている
+        size_t length() const { return size(); }
 
-        void clear(void) { this->_destroy(); }
+        bool empty() const { return !this->size(); }
 
-        operator const char *(void) const { return mStr; }
+        void clear() { this->_destroy(); }
 
-        operator std::string(void) const { return mStr; }
+        // 危険なので削除
+        // operator const char *() const { return mStr; }
 
-        bool operator==(const string &other) const;
-        bool operator==(const char *other) const;
-        bool operator!=(const string &other) const;
-        bool operator!=(const char *other) const;
+        operator std::string() const { return mStr; }
 
         int compare(const string &other) const;
+        bool operator==(const string &other) const;
+        bool operator==(const char *other) const;
         bool operator<(const string &other) const;
 
         string operator+(const string &other) const;
@@ -184,9 +185,9 @@ namespace MC3DSPluginFramework::gstd
 
         const_iterator end() const { return mStr + this->size(); }
 
-        char &front(void) const { return mStr[0]; }
+        char &front() const { return mStr[0]; }
 
-        char &back(void) const { return mStr[this->size()]; }
+        char &back() const { return mStr[this->size()]; }
 
         char &operator[](size_t index) const { return mStr[index]; }
 

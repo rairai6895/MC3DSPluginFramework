@@ -2,31 +2,49 @@
 
 #include "Minecraft/Common/World/Level/BlockPos.hpp"
 #include "Minecraft/Common/World/Level/BlockSource.hpp"
+#include "Minecraft/Common/World/Level/Material/Material.hpp"
 
 namespace MC3DSPluginFramework
 {
     class BlockSource;
 
+    // "C:\\Projects\\MC\\3DSPostLaunchPatch85\\handheld\\src\\common\\world\\level\\block\\Block.cpp"
     class Block
     {
     public:
         static inline Block **mBlocks = (Block **)0xB10520;
 
-        Block(gstd::string name, u8 id, u32 unknown)
+        Block(gstd::string name, u8 id, Material *material)
         {
-            reinterpret_cast<void (*)(Block *, gstd::string, u8, u32)>(0x5BDA9C)(this, name, id, unknown);
+            reinterpret_cast<void (*)(Block *, gstd::string, u8, Material *)>(0x5BDA9C)(this, name, id, material);
         }
 
         virtual ~Block();
+
+        static void registerBlock()
+        {
+            reinterpret_cast<void (*)()>(0x5A0DA0)();
+        }
 
         static Block *lookupByName(gstd::string name)
         {
             return reinterpret_cast<Block *(*)(gstd::string)>(0x5BD34C)(name);
         }
 
-        u8 getId(void) const { return mId; }
-        gstd::string getTileName(void) const { return mDescriptionId; }
-        gstd::string getName(void) const { return mName; }
+        u8 getId(void) const
+        {
+            return mId;
+        }
+
+        gstd::string getTileName(void) const
+        {
+            return mDescriptionId;
+        }
+
+        gstd::string getName(void) const
+        {
+            return mName;
+        }
 
         // FUN_0x71F980
         bool isType(const Block *type) const
@@ -39,7 +57,7 @@ namespace MC3DSPluginFramework
             reinterpret_cast<bool (*)(Block *, BlockSource *, const BlockPos &, Block *, u32)>(0x6953EC)(this, bs, pos, target, tick);
         }
 
-        void scheduleNeighborTick(BlockSource *bs, const Vec3_Int &pos);
+        void scheduleNeighborTick(BlockSource *bs, const BlockPos &pos);
 
         // FUN_0x71FCEC
         bool isTransparent(void) const

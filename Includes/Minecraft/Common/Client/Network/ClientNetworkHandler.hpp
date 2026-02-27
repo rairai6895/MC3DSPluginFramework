@@ -2,8 +2,9 @@
 
 namespace MC3DSPluginFramework
 {
-    namespace UI
+    class ClientNetworkHandler
     {
-
-    }    // namespace UI
+    public:
+    private:
+    };
 }    // namespace MC3DSPluginFramework

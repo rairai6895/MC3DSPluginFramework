@@ -5,6 +5,7 @@
 
 namespace MC3DSPluginFramework
 {
+    // Entity、Mob、Playerクラスが実用可能レベルになったら削除
     namespace Dropper
     {
 

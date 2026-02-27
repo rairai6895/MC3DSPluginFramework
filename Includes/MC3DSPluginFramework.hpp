@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Hooks/Hooks.hpp"
+#include "Minecraft/Common/Client/Gui/Screens/ScreenStack.hpp"
 #include "Minecraft/Common/Util/Util.hpp"
 #include "Minecraft/Common/World/Entity/Entity.hpp"
 #include "Minecraft/Common/World/Entity/EntityClass.hpp"
@@ -17,7 +19,6 @@
 #include "Minecraft/Other/Dropper.hpp"
 #include "Minecraft/Other/GameController.hpp"
 #include "Minecraft/Other/GameHelper.hpp"
-#include "Minecraft/Other/GameHooks.hpp"
 #include "Minecraft/Other/GameSound.hpp"
 #include "Minecraft/Other/Language.hpp"
 #include "Minecraft/Other/TextCode.hpp"

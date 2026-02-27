@@ -1,40 +1,29 @@
 #pragma once
 
-#include "Minecraft/Common/Client/Gui/Screens/BaseScreen.hpp"
+#include "Minecraft/Common/Util/Util.hpp"
 
 namespace MC3DSPluginFramework
 {
+    class C_Screen;
+
     // "C:\\Projects\\MC\\3DSPostLaunchPatch85\\handheld\\src\\common\\client\\gui\\screens\\ScreenStack.cpp"
     class ScreenStack
     {
     public:
-        // FUN_0x12D54C
-        BaseScreen &getScreen(void) const
-        {
-            if (mScreenStack.empty()) {
-                LOG("Screen Stack is empty - There must always be at least one stack on the screen", !mScreenStack.empty(), 0);
-            }
+        friend class ClientInstance;
 
-            return *mScreenStack.back();
-        }
-
-        // FUN_0x1A8304
-        void schedulePopScreen(int popCount)
-        {
-            mScheduledScreenPopCount += popCount;
-
-            if (!((int)mScreenStack.size() - mScheduledScreenPopCount > 0))
-                LOG("Attempting to pop too many screens", (int)mScreenStack.size() - mScheduledScreenPopCount > 0, 0);
-        }
-
-        void _popScreen(u32 unknown)
-        {
-            reinterpret_cast<void (*)(ScreenStack *, int)>(0x1A79E0)(this, unknown);
-        }
+        C_Screen &getScreen() const;
+        void schedulePopScreen(int popCount);
+        void _popScreen(u32 unknown);
+        bool empty();
+        void Unknown1();
+        Util::BoxedPtr::Shared<C_Screen> getScreenByName(gstd::string screenName);
+        gstd::vector<Util::BoxedPtr::Shared<C_Screen>> &getStack();
 
     private:
-        gstd::vector<Util::BoxedPtr::Shared<BaseScreen>> mScreenStack;
-        gstd::vector<Util::BoxedPtr::Shared<BaseScreen>> mUnk1;
+        gstd::vector<Util::BoxedPtr::Shared<C_Screen>> mScreenStack;
+        gstd::vector<Util::BoxedPtr::Shared<C_Screen>> mUnk1;
         int mScheduledScreenPopCount;
+        bool mUnk2;    // あるらしい
     };
 }    // namespace MC3DSPluginFramework

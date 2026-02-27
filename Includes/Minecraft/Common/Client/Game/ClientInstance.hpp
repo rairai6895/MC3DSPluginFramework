@@ -1,56 +1,35 @@
 #pragma once
 
-#include "Minecraft/Common/Client/Game/MinecraftGame.hpp"
-#include "Minecraft/Common/Client/Gui/Screens/ScreenChooser.hpp"
-#include "Minecraft/Common/World/Level/Level.hpp"
-#include "Minecraft/Other/PlayerController.hpp"
+#include "Minecraft/gstd/gstd.hpp"
 
 namespace MC3DSPluginFramework
 {
     class MinecraftGame;
     class PlayerController;
+    class Entity;
     class ScreenChooser;
+    class Level;
+    class ScreenStack;
+    class C_Screen;
 
     // "C:\\Projects\\MC\\3DSPostLaunchPatch85\\handheld\\src\\common\\client\\game\\ClientInstance.cpp"
     class ClientInstance
     {
     public:
-        MinecraftGame *getMinecraftGame(void) const { return mMinecraftGame; }
+        MinecraftGame *getMinecraftGame() const;
+        void onTick(u32 tick, u32 maxtick);
+        void *getServerData() const;
+        Entity *getPlayer() const;
+        Entity *getLocalPlayer() const;
+        Level *getLevel() const;
+        PlayerController *getController() const;
+        ScreenChooser *getScreenChooser() const;
+        ScreenStack *getScreenStack() const;
+        C_Screen &getScreen() const;
+        bool isStickInputEnabled() const;
+        bool pause();
 
-        void onTick(u32 tick, u32 maxtick)
-        {
-            reinterpret_cast<void (*)(ClientInstance *, u32, u32)>(0x2520FC)(this, tick, maxtick);
-        }
-
-        void *getServerData(void)
-        {
-            return mServerData;
-
-            // FUN_0x124DD0 getLevel
-        }
-
-        Entity *getPlayer(void) const;
-
-        Entity *getLocalPlayer(void) const { return mLocalPlayer; }
-
-        Level *getLevel(void) const
-        {
-            return reinterpret_cast<Level *(*)(const ClientInstance *)>(0x124DC8)(this);
-        }
-
-        PlayerController *getController(void) const
-        {
-            return reinterpret_cast<PlayerController *(*)(const ClientInstance *)>(0x12AAD4)(this);
-        }
-
-        ScreenChooser *getScreenChooser(void) const;
-
-        bool isPaused(void) const
-        {
-            return !reinterpret_cast<bool (*)(const ClientInstance *)>(0x6C734C)(this);
-        }
-
-        void pause(void);
+        bool FUN_0012aae4() const;
 
     private:
         u32 mVtable1;    // +0x0 0x9A8EE4

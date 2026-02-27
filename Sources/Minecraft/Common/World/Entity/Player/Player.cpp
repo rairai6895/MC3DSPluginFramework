@@ -1,4 +1,5 @@
 #include "Minecraft/Common/World/Entity/Player/Player.hpp"
+#include "Minecraft/Common/Client/Input/PlayerController.hpp"
 
 namespace MC3DSPluginFramework
 {
@@ -19,7 +20,7 @@ namespace MC3DSPluginFramework
     bool Player::IsJumping(void)
     {
         if (EntityRenderDispatcher *instance = EntityRenderDispatcher::getInstance())
-            return *(bool *)((u32)(instance->getClientInstance()->getController()->mUnk2) + 0x4D);
+            return *(bool *)((u32)(instance->getClientInstance()->getController()->mUnk2.get()) + 0x4D);
 
         return false;
     }
@@ -27,13 +28,13 @@ namespace MC3DSPluginFramework
     void Player::IsJumping(bool jumping)
     {
         if (EntityRenderDispatcher *instance = EntityRenderDispatcher::getInstance())
-            *(bool *)((u32)(instance->getClientInstance()->getController()->mUnk2) + 0x4D) = jumping;
+            *(bool *)((u32)(instance->getClientInstance()->getController()->mUnk2.get()) + 0x4D) = jumping;
     }
 
     bool Player::IsSneaking(void)
     {
         if (EntityRenderDispatcher *instance = EntityRenderDispatcher::getInstance())
-            return *(bool *)((u32)(instance->getClientInstance()->getController()->mUnk2) + 0x4E);
+            return *(bool *)((u32)(instance->getClientInstance()->getController()->mUnk2.get()) + 0x4E);
 
         return false;
     }
@@ -41,7 +42,7 @@ namespace MC3DSPluginFramework
     void Player::IsSneaking(bool sneak)
     {
         if (EntityRenderDispatcher *instance = EntityRenderDispatcher::getInstance())
-            *(bool *)((u32)(instance->getClientInstance()->getController()->mUnk2) + 0x4E) = sneak;
+            *(bool *)((u32)(instance->getClientInstance()->getController()->mUnk2.get()) + 0x4E) = sneak;
     }
 
     u32 Player::SprintDelay(void)

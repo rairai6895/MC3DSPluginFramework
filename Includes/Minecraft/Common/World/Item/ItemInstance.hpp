@@ -9,7 +9,8 @@
 
 namespace MC3DSPluginFramework
 {
-    struct EnchantStatus {
+    struct EnchantStatus
+    {
         EnchantId id;
         s16 level;
     };
@@ -84,6 +85,17 @@ namespace MC3DSPluginFramework
             reinterpret_cast<void (*)(ItemInstance *, ItemId, u8, u16)>(0x1D1A10)(this, id, count, dataValue);
         }
 
+        void set(u8 inCount)
+        {
+            reinterpret_cast<void (*)(ItemInstance *, u8)>(0x1D179C)(this, inCount);
+        }
+
+        // FUN_0x1D1F88
+        void sub(u8 count)
+        {
+            set(this->mCount - count);
+        }
+
         u8 getMaxStackSize(void) const
         {
             return reinterpret_cast<bool (*)(const ItemInstance *)>(0x6B1DA0)(this);
@@ -142,17 +154,6 @@ namespace MC3DSPluginFramework
         // FUN_0x1D0E28
         void reName(gstd::string name);
 
-        size_t getRepairCost(void) const;
-        void setSignTextTag(gstd::string line1, gstd::string line2, gstd::string line3, gstd::string line4);
-        void setMonsterSpawnerTag(EntityId id, u16 delay, u16 minSpawnDelay, u16 maxSpawnDelay, u16 spawnCount, u16 maxNearbyEntities, u16 requiredPlayerRange, u16 spawnRange);
-        void setUnbreakableTag(void);
-        void removeUnbreakableTag(void);
-        void setCustomColorTag(const BColor &color);
-        void removeCustomColorTag(void);
-        void setItemsTag(const std::vector<std::pair<u8, ItemInstance>> &items);
-        void setItemsTag(std::vector<std::pair<u8, gstd::unique_ptr<CompoundTag>>> &&items);
-        void setItemFrameTag(const ItemInstance &item, u8 rotation);
-
     public:
         u8 mCount;
         u16 mDataValue;    // auxvalue
@@ -167,7 +168,8 @@ namespace MC3DSPluginFramework
         u8 mUnk3[24];
     };
 
-    struct ArmorSlots {
+    struct ArmorSlots
+    {
         ItemInstance helmet, chestplate, leggings, boots;
     };
 

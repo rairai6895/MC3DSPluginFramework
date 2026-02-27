@@ -14,7 +14,14 @@ namespace MC3DSPluginFramework
             this->y = pos.z >> 4;
         }
 
-        u32 x, y;
+        bool operator<(const ChunkPos &other) const
+        {
+            if (y == other.y)
+                return x < other.x;
+            return y < other.y;
+        }
+
+        int x, y;
 
     private:
     };

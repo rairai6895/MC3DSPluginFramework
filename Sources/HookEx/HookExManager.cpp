@@ -8,7 +8,8 @@ static constexpr size_t mMemSize      = 0x1000;
 static u32 mMapMem[mMemSize]          = {};
 static HookExManager *mSlotPool       = (HookExManager *)0x01E83000;
 
-HookExManager *HookExManager::AllocMitmModeSlot(HookEx *hook) {
+HookExManager *HookExManager::AllocMitmModeSlot(HookEx *hook)
+{
     if (SlotPoolMapping())
         for (size_t i = 0; i < mMaxHookCount; ++i)
             if (!(mSlotPool + i)->mCallback && (hook->mMode & HookEx::MITM_MODE)) {
@@ -20,7 +21,8 @@ HookExManager *HookExManager::AllocMitmModeSlot(HookEx *hook) {
     return nullptr;
 }
 
-HookExManager *HookExManager::AllocSubWrapModeSlot(HookEx *hook) {
+HookExManager *HookExManager::AllocSubWrapModeSlot(HookEx *hook)
+{
     if (SlotPoolMapping())
         for (size_t i = 0; i < mMaxHookCount; ++i) {
             if (!(mSlotPool + i)->mCallback) {
@@ -36,22 +38,22 @@ HookExManager *HookExManager::AllocSubWrapModeSlot(HookEx *hook) {
 
                 if (before) {
                     InstrLine.push_back(0xE59FE000 | code);    // ldr lr, [pc, #18] -> mBeforeCallbackAddress
-                    InstrLine.push_back(0xE12FFF3E);           // blx lr
+                    InstrLine.push_back(0xE12FFF3E);    // blx lr
                     code -= 4;
                 }
 
                 InstrLine.push_back(0xE59FE000 | code);    // ldr lr, [pc, #code] -> mCallbackAddress (Original)
-                InstrLine.push_back(0xE12FFF3E);           // blx lr
+                InstrLine.push_back(0xE12FFF3E);    // blx lr
                 code -= 4;
 
                 if (after) {
                     InstrLine.push_back(0xE59FE000 | code);    // ldr lr, [pc, #code] -> mAfterCallbackAddress
-                    InstrLine.push_back(0xE12FFF3E);           // blx lr
+                    InstrLine.push_back(0xE12FFF3E);    // blx lr
                     code -= 4;
                 }
 
                 InstrLine.push_back(0xE59FE000 | code);    // ldr lr, [pc, #code] -> mReturnAddress
-                InstrLine.push_back(0xE12FFF1E);           // bx lr
+                InstrLine.push_back(0xE12FFF1E);    // bx lr
 
                 if (before)
                     InstrLine.push_back(hook->mBeforeCallbackAddress);
@@ -81,33 +83,30 @@ HookExManager *HookExManager::AllocSubWrapModeSlot(HookEx *hook) {
     return nullptr;
 }
 
-HookExManager *HookExManager::AllocRoutineModeSlot(HookEx *hook) {
+HookExManager *HookExManager::AllocRoutineModeSlot(HookEx *hook)
+{
     if (SlotPoolMapping())
         for (size_t i = 0; i < mMaxHookCount; ++i) {
             if (mSlotPool)
                 if (!(mSlotPool + i)->mCallback) {
-
                     std::vector<u32> InstrLine;
-                    bool after = (hook->mMode & HookEx::EXECUTE_ORIGINAL_INSTR_AFTER);
-                    u32 code   = after ? 0x18 : 0x14;
+                    constexpr u32 NOP = 0xE320F000;
+                    bool after        = (hook->mMode & HookEx::EXECUTE_ORIGINAL_INSTR_AFTER);
+                    bool before       = (hook->mMode & HookEx::EXECUTE_ORIGINAL_INSTR_BEFORE);
+                    bool mitm         = (hook->mMode & HookEx::MITM_MODE);
 
-                    if (hook->mMode & HookEx::EXECUTE_ORIGINAL_INSTR_BEFORE)
-                        InstrLine.push_back(hook->mOriginalInstr);
-
-                    InstrLine.push_back(0xE92D5FFF);           // stmfd sp! {r0-r12, lr} (push {r0-r12, lr})
-                    InstrLine.push_back(0xED2D0A20);           // vstmdb sp! {s0-s31}    (vpush {s0-s31})
-                    InstrLine.push_back(0xE1A0000D);           // mov r0, sp             (param1 = regs)
-                    InstrLine.push_back(0xE28D10B8);           // add r1, sp, #184       (param2 = sp (sizeof(Regs) == 184))
-                    InstrLine.push_back(0xE59F2000 | code);    // ldr r2, [pc, #code]   -> hook
-                    InstrLine.push_back(0xE59FE000 | code);    // ldr lr, [pc, #code]   -> mCallbackAddress
-                    InstrLine.push_back(0xE12FFF3E);           // blx lr
-                    InstrLine.push_back(0xECBD0A20);           // vldmia sp! {s0-s31}    (vpop {s0-s31})
-                    InstrLine.push_back(0xE8BD5FFF);           // ldmfd sp! {r0-r12, lr} (pop {r0-r12, lr})
-
-                    if (after)
-                        InstrLine.push_back(hook->mOriginalInstr);
-
-                    InstrLine.push_back(0xE59FE008);    // ldr lr, [pc, #8]   -> mReturnAddress
+                    InstrLine.push_back(before ? hook->mOriginalInstr : NOP);
+                    InstrLine.push_back(0xE92D5FFF);    // stmfd sp! {r0-r12, lr} (push {r0-r12, lr})
+                    InstrLine.push_back(0xED2D0A20);    // vstmdb sp! {s0-s31}    (vpush {s0-s31})
+                    InstrLine.push_back(0xE1A0000D);    // mov r0, sp             (param1 = regs)
+                    InstrLine.push_back(0xE28D10B8);    // add r1, sp, #184       (param2 = sp (sizeof(Regs) == 184))
+                    InstrLine.push_back(0xE59F2018);    // ldr r2, [pc, #0x18]   -> hook
+                    InstrLine.push_back(0xE59FE018);    // ldr lr, [pc, #0x18]   -> mCallbackAddress
+                    InstrLine.push_back(0xE12FFF3E);    // blx lr
+                    InstrLine.push_back(0xECBD0A20);    // vldmia sp! {s0-s31}    (vpop {s0-s31})
+                    InstrLine.push_back(0xE8BD5FFF);    // ldmfd sp! {r0-r12, lr} (pop {r0-r12, lr})
+                    InstrLine.push_back(after ? hook->mOriginalInstr : NOP);
+                    InstrLine.push_back(mitm ? NOP : 0xE59FE008);    // ldr lr, [pc, #8]   -> mReturnAddress
                     InstrLine.push_back(0xE12FFF1E);
                     InstrLine.push_back((u32)hook);
                     InstrLine.push_back((u32)hook->mCallbackAddress);
@@ -131,18 +130,15 @@ HookExManager *HookExManager::AllocRoutineModeSlot(HookEx *hook) {
     return nullptr;
 }
 
-void HookExManager::FreeSlot(HookEx *hook) {
-    if (hook->mIsNormal) {
-        mInstr    = 0;
-        mCallback = 0;
-        return;
-    }
-
+void HookExManager::FreeSlot(HookEx *hook)
+{
+    mInstr = 0;
     free((void *)mCallback);
     mCallback = 0;
 }
 
-bool HookExManager::SlotPoolMapping(void) {
+bool HookExManager::SlotPoolMapping(void)
+{
     if (!mMemMapped)
         mMemMapped = svcMapProcessMemoryEx(CUR_PROCESS_HANDLE, (u32)mSlotPool, CUR_PROCESS_HANDLE, (u32)mMapMem, mMemSize) == 0;
 

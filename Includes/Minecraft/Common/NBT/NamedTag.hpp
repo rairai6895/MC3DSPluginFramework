@@ -26,7 +26,7 @@ namespace MC3DSPluginFramework
             return mParent;
         }
 
-    private:
+    protected:
         gstd::string mParent;
     };
 }    // namespace MC3DSPluginFramework

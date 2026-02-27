@@ -1,15 +1,18 @@
 #pragma once
 
-#include "Minecraft/Common/Client/Game/ClientInstance.hpp"
-#include "Minecraft/Common/Client/Gui/Screens/ScreenChooser.hpp"
-#include "Minecraft/Common/Client/Gui/Screens/ScreenStack.hpp"
-#include "Minecraft/Common/Client/Gui/Screens/SystemMessagesScreen.hpp"
 #include "Minecraft/Common/Util/BoxedPtr.hpp"
-#include "Minecraft/Common/World/Level/Level.hpp"
 
 namespace MC3DSPluginFramework
 {
     class ClientInstance;
+    class Level;
+    class Entity;
+    class ScreenStack;
+    class ScreenChooser;
+    class C_Screen;
+    class Dimension;
+    class BlockPos;
+    class BaseScreen;
 
     // "C:\\Projects\\MC\\3DSPostLaunchPatch85\\handheld\\src\\common\\client\\game\\MinecraftGame.cpp"
     class MinecraftGame
@@ -28,102 +31,21 @@ namespace MC3DSPluginFramework
         {
         }
 
-        void onAppResumed(void)
-        {
-            reinterpret_cast<void (*)(MinecraftGame *)>(0x2269D4)(this);
-        }
-
-        void _setupLevelRendering(Level *level, Entity *player)
-        {
-            reinterpret_cast<void (*)(MinecraftGame *, Level *, Entity *)>(0x22AD74)(this, level, player);
-        }
-
-        void pushScreen(Util::BoxedPtr::Shared<BaseScreen> screen, bool unknown)
-        {
-            reinterpret_cast<void (*)(MinecraftGame *, Util::BoxedPtr::Shared<BaseScreen>, bool)>(0x226054)(this, screen, unknown);
-        }
-
-        bool isShowingScreen(gstd::string screen) const
-        {
-            return reinterpret_cast<bool (*)(const MinecraftGame *, gstd::string)>(0x6C12B8)(this, screen);
-        }
-
-        ScreenStack *getScreenStack(void) const
-        {
-            return mScreenStack;
-        }
-
-        gstd::vector<ClientInstance *> &getClientInstances(void)
-        {
-            return mUnk29;
-        }
-
-        Entity *getPlayer(void);
-
-        // FUN_0x6C1400
-        void *getSkinRepository(void) const
-        {
-            if (!mSkinRepository)
-                LOG("The skin repository has not be created yet.", mSkinRepository != nullptr, 0);
-
-            return mSkinRepository;
-        }
-
-        // FUN_0x6C16B4
-        void *getResourcePackRepository(void)
-        {
-            if (!mResourcePackRepository)
-                LOG("The resource pack repository has not be created yet.", mResourcePackRepository != nullptr, 0);
-
-            return mResourcePackRepository;
-        }
-
-        // FUN_0x6C15EC
-        void *getResourcePackManager(void)
-        {
-            if (!mResourcePackManager)
-                LOG("The resource pack manager has not be created yet.", mResourcePackManager != nullptr, 0);
-
-            return mResourcePackManager;
-        }
-
-        // FUN_0x6C14CC
-        void *getSkinGeometryGroup(void)
-        {
-            if (!mSkinGeometryGroup)
-                LOG("The skin model repository has not be created yet.", mSkinGeometryGroup != nullptr, 0);
-
-            return mSkinGeometryGroup;
-        }
-
-        // FUN_0x6C1220
-        void *getUserManager(void)
-        {
-            if (!mUserManager)
-                LOG("UserManager must have been created here.", mUserManager != nullptr, 0);
-
-            return mUserManager;
-        }
-
-        // FUN_0x6C1178
-        void *getMultiPlayer(void)
-        {
-            if (!mMultiplayer)
-                LOG("Multiplayer must have been created here.", mMultiplayer != nullptr, 0);
-
-            return mMultiplayer;
-        }
-
-        ScreenChooser *getScreenChooser(void) const
-        {
-            return mScreenChooser;
-        }
-
-        // FUN_0x12D544
-        BaseScreen &getScreen()
-        {
-            return mScreenStack->getScreen();
-        }
+        void onAppResumed(void);
+        void _setupLevelRendering(Level *level, Entity *player);
+        void pushScreen(Util::BoxedPtr::Shared<C_Screen> screen, bool unknown);
+        bool isShowingScreen(gstd::string screen) const;
+        ScreenStack *getScreenStack(void) const;
+        gstd::vector<ClientInstance *> &getClientInstances();
+        Entity *getPlayer();
+        void *getSkinRepository() const;
+        void *getResourcePackRepository() const;
+        void *getResourcePackManager() const;
+        void *getSkinGeometryGroup() const;
+        void *getUserManager() const;
+        void *getMultiPlayer() const;
+        ScreenChooser *getScreenChooser() const;
+        C_Screen &getScreen() const;
 
     private:
         // vtable = 0x9A6644
@@ -194,9 +116,8 @@ namespace MC3DSPluginFramework
         u32 mUnk46;    // +0x12C 0
         u32 mUnk47;    // +0x130 0
         u32 mUnk48;    // +0x134 0
-        void *mUnk49;    // +0x138
-        Util::BoxedPtr::Shared<void *> mUnk50;    // +0x13C
-        Util::BoxedPtr::Shared<void *> mUnk51;    // +0x144
+        Util::BoxedPtr::Shared<void *> mUnk50;    // +0x138
+        Util::BoxedPtr::Shared<void *> mUnk51;    // +0x140
         ScreenChooser *mScreenChooser;    // +0x148
         u32 mUnk52;    // +0x14C 0
         u32 mUnk53;    // +0x150 0

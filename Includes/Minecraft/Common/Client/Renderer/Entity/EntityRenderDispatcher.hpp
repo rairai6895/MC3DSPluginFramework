@@ -24,7 +24,11 @@ namespace MC3DSPluginFramework
             return reinterpret_cast<void *(*)(const EntityRenderDispatcher *, u32)>(0x444CB0)(this, rendererId);
         }
 
-        ClientInstance *getClientInstance(void) const { return mClientInstance; }
+        ClientInstance *getClientInstance(void) const
+        {
+            return mClientInstance;
+        }
+
         Level *getLevel(void) const { return mLevel; }
         u32 getOptions(void) const { return (u32)mOptions; }
 

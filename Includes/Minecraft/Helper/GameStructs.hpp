@@ -10,14 +10,16 @@
 namespace MC3DSPluginFramework
 {
 
-    struct EffectData {
+    struct EffectData
+    {
         u32 effectID;
         u32 time;
         u32 level;
         u32 unk;
     };
 
-    struct BlockData {
+    struct BlockData
+    {
         BlockId blockId = *(BlockId *)0xA34724;
         u8 dataId       = 0;
 
@@ -33,7 +35,8 @@ namespace MC3DSPluginFramework
         }
     };
 
-    struct ScreenID {
+    struct ScreenID
+    {
         static inline const char *saving_screen                       = "saving_screen";
         static inline const char *sd_card_landing_screen              = "sd_card_landing_screen";
         static inline const char *pausedbyhost_screen                 = "pausedbyhost_screen";
@@ -91,7 +94,8 @@ namespace MC3DSPluginFramework
         static inline const char *start_menu = "start_menu";
     };
 
-    struct UniqueID {
+    struct UniqueID
+    {
         u32 mUnk1;
         u32 mUnk2;
 
@@ -102,11 +106,12 @@ namespace MC3DSPluginFramework
     };
 
     // FloatColor
-    struct FColor {
+    struct FColor
+    {
         float r;
         float g;
         float b;
-        float unk;    // a?
+        float a;
 
         FColor(float r, float g, float b) :
             r(r), g(g), b(b) {}
@@ -118,7 +123,8 @@ namespace MC3DSPluginFramework
     };
 
     // ByteColor
-    struct BColor {
+    struct BColor
+    {
         u8 b;
         u8 g;
         u8 r;

@@ -144,7 +144,7 @@ namespace MC3DSPluginFramework
         // 0x4EB408でもなぜか同じ引数が使われている(多分特に処理はない)
         // アイテムや無機物のエンティティに使うとクラッシュする可能性あり
 
-        if (GetAttribute(Attribute::Health))
+        if (GetAttributeInstance(Attribute::Health))
             reinterpret_cast<bool (*)(Entity *, const DamageSource &, u32, u32, u32)>(0x4EBAC8)(this, damageSource, damage, 1, 0);
     }
 
@@ -175,9 +175,9 @@ namespace MC3DSPluginFramework
         return res;
     }
 
-    Attribute *Entity::GetAttribute(const Attribute::Key &key) const
+    AttributeInstance *Entity::GetAttributeInstance(const Attribute &key) const
     {    // 0x99C6D0(vtable)
-        return reinterpret_cast<Attribute *(*)(const Entity *, const Attribute::Key &)>(0x2E9564)(this, key);
+        return reinterpret_cast<AttributeInstance *(*)(const Entity *, const Attribute &)>(0x2E9564)(this, key);
     }
 
     bool Entity::IsEffected(Effect *effect) const
@@ -345,10 +345,10 @@ namespace MC3DSPluginFramework
         return *(float *)Offset(0x1038);
     }
 
-    AbilityManager *Entity::GetAbilityManager(void) const
+    Abilities *Entity::GetAbilityManager(void) const
     {
         if (IsPlayer())
-            return (AbilityManager *)Offset(0x1160);
+            return (Abilities *)Offset(0x1160);
 
         return nullptr;
     }

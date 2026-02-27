@@ -4,10 +4,12 @@
 
 namespace MC3DSPluginFramework
 {
+    // コンストラクタ内で、ChunkSourceコンストラクタじゃないのを呼んでるから直系の子クラスではない可能性がある
+
     class PlayerChunkSource : public ChunkSource
     {
     public:
-        // FUN_374178
+        // FUN_0x374178
         void setRadius(int newRadius) {}
 
     public:

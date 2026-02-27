@@ -3,6 +3,7 @@
 #include "Minecraft/Common/NBT/CompoundTag.hpp"
 #include "Minecraft/Common/World/Level/Level.hpp"
 #include "Minecraft/Helper/GameEnums.hpp"
+#include "Minecraft/Other/Packet.hpp"
 
 namespace MC3DSPluginFramework
 {
@@ -26,6 +27,17 @@ namespace MC3DSPluginFramework
         Dimension(Level *level, u32 unknown1, u32 unknown2)
         {
             reinterpret_cast<Dimension *(*)(Dimension *, Level *, u32, u32)>(0x66E550)(this, level, unknown1, unknown2);
+        }
+
+        Level *getLevel()
+        {
+            return mLevel;
+        }
+
+        void sendPacketForEntity(Entity *e, const SendEntityMotionPacket &packet, u32 unknown1)
+        {
+            // パケットの型は親クラスのかもしれない
+            reinterpret_cast<void (*)(Dimension *, Entity *, const SendEntityMotionPacket &, u32)>(0x60D090)(this, e, packet, unknown1);
         }
 
     public:

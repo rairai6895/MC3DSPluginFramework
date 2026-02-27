@@ -2,6 +2,7 @@
 
 #include "Minecraft/Common/Client/Renderer/Entity/EntityRenderDispatcher.hpp"
 #include "Minecraft/Common/World/Entity/EntityClass.hpp"
+#include "Minecraft/Common/World/Entity/Mob.hpp"
 
 namespace MC3DSPluginFramework
 {
@@ -44,6 +45,17 @@ namespace MC3DSPluginFramework
         {
             reinterpret_cast<void (*)(Player *, const ItemInstance &)>(0x605820)(this, item);
         }
+
+    private:
+    };
+
+    // vtable 0x99C31C
+    class _Player : public Mob
+    {
+    public:
+        // void initializeComponents(u32 unknown) override;
+
+        ~_Player() override;
 
     private:
     };

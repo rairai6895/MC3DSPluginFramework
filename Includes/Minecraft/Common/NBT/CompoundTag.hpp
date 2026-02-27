@@ -25,6 +25,13 @@ namespace MC3DSPluginFramework
         MACRO_MAKE_PAIR(TagData, gstd::string, name, gstd::unique_ptr<Tag>, tag);
         using Tags = gstd::vector<TagData>;
 
+        // FUN_0x182464
+        CompoundTag() :
+            NamedTag(""), mTagList(1)
+        {
+            *(u32 *)this = 0x99A3F4;
+        }
+
         CompoundTag(gstd::string parent) :
             NamedTag(parent)
         {

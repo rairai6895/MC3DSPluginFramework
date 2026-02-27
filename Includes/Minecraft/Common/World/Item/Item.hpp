@@ -87,7 +87,7 @@ namespace MC3DSPluginFramework
         static constexpr size_t MAX_ITEMS = 0x200;
         static inline Item **mItems       = (Item **)0xB0CEF0;
 
-        static void registerItems(void)
+        static void registerItem(void)
         {
             reinterpret_cast<void (*)()>(0x560FF0)();
         }

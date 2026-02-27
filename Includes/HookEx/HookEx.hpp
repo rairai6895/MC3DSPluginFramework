@@ -1,17 +1,17 @@
 #pragma once
 
 #include "HookExManager.hpp"
+#include "Regs.hpp"
 #include <3ds.h>
 #include <csvc.h>
-#include <types.h>
 #include <vector>
 
-struct Regs;
 class HookExManager;
-class HookEx {
+class HookEx
+{
     using Routine = void (*)(Regs &, u32 *, HookEx *);
 
-  public:
+public:
     friend HookExManager;
 
     enum Mode {
@@ -23,12 +23,6 @@ class HookEx {
         EXECUTE_ORIGINAL_INSTR_AFTER  = 1 << 4,
     };
 
-    struct Context {
-        u32 targetAddress;
-        u32 originalInstr;
-        void *args;
-    };
-
     HookEx();
     ~HookEx();
 
@@ -36,20 +30,20 @@ class HookEx {
     bool InitSubWrap(u32 targetAddress, u32 beforeCallbackAddress, u32 afterCallbackAddress);
     bool InitRoutine(u32 targetAddress, Routine callbackAddress, u32 routineMode = 0);
 
-    bool IsEnabled(void);
-    void Enable(void);
-    void Disable(void);
+    bool IsEnabled();
+    void Enable();
+    void Disable();
 
     void SetArgs(void *args);
-    Context GetContext(void);
+    void *GetArgs();
 
     static u32 DecodeARMBranch(u32 from);
     static void SetBranch(u32 from, u32 to);
     static void SetBranchLink(u32 from, u32 to);
 
-  private:
+private:
     static u32 CheckAddress(u32 address);
-    void ClearCache(void);
+    void ClearCache();
 
     u32 mTargetAddress;
     u32 mCallbackAddress;
@@ -58,8 +52,7 @@ class HookEx {
     u32 mReturnAddress;
     u32 mOriginalInstr;
     u32 mMode;
-    void *mArgs = nullptr;
+    void *mArgs;
     HookExManager *mSlot;
     bool mIsEnabled;
-    bool mIsNormal;
 };
