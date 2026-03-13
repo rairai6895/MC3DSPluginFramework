@@ -1,6 +1,6 @@
 # MC3DSPluginFramework
 
-「「Minecraft New Nintendo 3DS Edition」向けのプラグイン開発用フレームワークです。  
+「Minecraft New Nintendo 3DS Edition」向けのプラグイン開発用フレームワークです。  
 このライブラリには、リバースエンジニアリングにより解析されたゲーム内部のクラスや関数情報もまとめられており、プラグイン開発で直接利用できます。
 
 ---
