@@ -2,118 +2,79 @@
 
 namespace MC3DSPluginFramework
 {
-
-    gstd::reference_ptr<EndTag> CompoundTag::getEnd(gstd::string tagName) const
+    // FUN_0x6A0A4C
+    bool CompoundTag::getBool(const gstd::string &name) const
     {
-        if (gstd::reference_ptr<Tag> tag = this->get(tagName))
-            if (tag->getType() == Type::End)
-                return *(gstd::reference_ptr<EndTag> *)&tag;
-
-        return {};
+        return contains(name, Type::Byte) ? reinterpret_cast<ByteTag *>(get(name))->mValue : false;
     }
 
-    gstd::reference_ptr<ByteTag> CompoundTag::getByte(gstd::string tagName) const
+    // FUN_0x6A1080
+    char CompoundTag::getByte(const gstd::string &name) const
     {
-        if (gstd::reference_ptr<Tag> tag = this->get(tagName))
-            if (tag->getType() == Type::Byte)
-                return *(gstd::reference_ptr<ByteTag> *)&tag;
-
-        return {};
+        return contains(name, Type::Byte) ? reinterpret_cast<ByteTag *>(get(name))->mValue : 0;
     }
 
-    gstd::reference_ptr<ShortTag> CompoundTag::getShort(gstd::string tagName) const
+    // FUN_0x6A11E0
+    short CompoundTag::getShort(const gstd::string &name) const
     {
-        if (gstd::reference_ptr<Tag> tag = this->get(tagName))
-            if (tag->getType() == Type::Short)
-                return *(gstd::reference_ptr<ShortTag> *)&tag;
-
-        return {};
+        return contains(name, Type::Short) ? reinterpret_cast<ShortTag *>(get(name))->mValue : 0;
     }
 
-    gstd::reference_ptr<IntTag> CompoundTag::getInt(gstd::string tagName) const
+    // FUN_0x6A1038
+    int CompoundTag::getInt(const gstd::string &name) const
     {
-        // FUN_0x6A1038
-        if (gstd::reference_ptr<Tag> tag = this->get(tagName))
-            if (tag->getType() == Type::Int)
-                return *(gstd::reference_ptr<IntTag> *)&tag;
-
-        return {};
+        return contains(name, Type::Int) ? reinterpret_cast<IntTag *>(get(name))->mValue : 0;
     }
 
-    gstd::reference_ptr<Int64Tag> CompoundTag::getInt64(gstd::string tagName) const
+    // FUN_0x6A1194
+    int64_t CompoundTag::getInt64(const gstd::string &name) const
     {
-        if (gstd::reference_ptr<Tag> tag = this->get(tagName))
-            if (tag->getType() == Type::Int64)
-                return *(gstd::reference_ptr<Int64Tag> *)&tag;
-
-        return {};
+        return contains(name, Type::Int64) ? reinterpret_cast<Int64Tag *>(get(name))->mValue : 0;
     }
 
-    gstd::reference_ptr<FloatTag> CompoundTag::getFloat(gstd::string tagName) const
+    // FUN_0x6A1148
+    float CompoundTag::getFloat(const gstd::string &name) const
     {
-        if (gstd::reference_ptr<Tag> tag = this->get(tagName))
-            if (tag->getType() == Type::Float)
-                return *(gstd::reference_ptr<FloatTag> *)&tag;
-
-        return {};
+        return contains(name, Type::Float) ? reinterpret_cast<FloatTag *>(get(name))->mValue : 0;
     }
 
-    gstd::reference_ptr<DoubleTag> CompoundTag::getDouble(gstd::string tagName) const
+    // FUN_0x6A0BBC
+    std::pair<size_t, gstd::string> CompoundTag::getByteArray(const gstd::string &name) const
     {
-        if (gstd::reference_ptr<Tag> tag = this->get(tagName))
-            if (tag->getType() == Type::Double)
-                return *(gstd::reference_ptr<DoubleTag> *)&tag;
-
-        return {};
+        return contains(name, Type::ByteArray) ? reinterpret_cast<ByteArrayTag *>(get(name))->mArray : std::pair<size_t, gstd::string>();
     }
 
-    gstd::reference_ptr<ByteArrayTag> CompoundTag::getByteArray(gstd::string tagName) const
+    // FUN_0x6A1228
+    gstd::string &CompoundTag::getString(const gstd::string &name) const
     {
-        if (gstd::reference_ptr<Tag> tag = this->get(tagName))
-            if (tag->getType() == Type::ByteArray)
-                return *(gstd::reference_ptr<ByteArrayTag> *)&tag;
-
-        return {};
+        return contains(name, Type::String) ? reinterpret_cast<StringTag *>(get(name))->mString : Util::EMPTY_STRING;
     }
 
-    gstd::reference_ptr<StringTag> CompoundTag::getString(gstd::string tagName) const
+    // FUN_0x6A0C30
+    ListTag *CompoundTag::getList(const gstd::string &name) const
     {
-        // return reinterpret_cast<const gstd::string &(*)(const CompoundTag *, const gstd::string &)>(0x6A1228)(this, tagName);
-        if (gstd::reference_ptr<Tag> tag = this->get(tagName))
-            if (tag->getType() == Type::String)
-                return *(gstd::reference_ptr<StringTag> *)&tag;
-
-        return {};
+        return contains(name, Type::List) ? reinterpret_cast<ListTag *>(get(name)) : nullptr;
     }
 
-    gstd::reference_ptr<ListTag> CompoundTag::getList(gstd::string tagName) const
+    // 恐らく読み取り専用
+    // FUN_0x6A0A9C
+    const CompoundTag *CompoundTag::getCompound(const gstd::string &name) const
     {
-        // return reinterpret_cast<ListTag *(*)(const CompoundTag *, const gstd::string &)>(0x6A0C30)(this, tagName);
-        if (gstd::reference_ptr<Tag> tag = this->get(tagName))
-            if (tag->getType() == Type::List)
-                return *(gstd::reference_ptr<ListTag> *)&tag;
+        if (!contains(name, Type::Compound))
+            return nullptr;
 
-        return {};
+        Tag *tag = get(name);
+
+        if (!tag)
+            LOG("Not found anyway?", tag, 0);
+
+        return reinterpret_cast<CompoundTag *>(tag);
     }
 
-    gstd::reference_ptr<CompoundTag> CompoundTag::getCompound(gstd::string tagName) const
+    // FUN_0x6A0B48
+    std::pair<size_t, gstd::string> CompoundTag::getIntArray(const gstd::string &name) const
     {
-        // return reinterpret_cast<CompoundTag *(*)(const CompoundTag *, const gstd::string &)>(0x6A0A9C)(this, tagName);
-        if (gstd::reference_ptr<Tag> tag = this->get(tagName))
-            if (tag->getType() == Type::Compound)
-                return *(gstd::reference_ptr<CompoundTag> *)&tag;
-
-        return {};
-    }
-
-    gstd::reference_ptr<IntArrayTag> CompoundTag::getIntArray(gstd::string tagName) const
-    {
-        // reinterpret_cast<ListTag *(*)(std::pair<size_t, gstd::string> *, const CompoundTag *, const gstd::string &)>(0x6A0B48)(out, this, tagName);
-        if (gstd::reference_ptr<Tag> tag = this->get(tagName))
-            if (tag->getType() == Type::IntArray)
-                return *(gstd::reference_ptr<IntArrayTag> *)&tag;
-
-        return {};
+        return contains(name, Type::IntArray) ? reinterpret_cast<IntArrayTag *>(get(name))->mArray : std::pair<size_t, gstd::string>();
     }
 
 }    // namespace MC3DSPluginFramework

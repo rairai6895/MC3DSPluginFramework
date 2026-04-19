@@ -35,6 +35,12 @@ namespace MC3DSPluginFramework::gstd
         return this->compare(other) < 0;
     }
 
+    string string::operator+(const char *str) const
+    {
+        return reinterpret_cast<string (*)(const string *, const char *)>(0x10F154)(this, str);
+    }
+
+    // FUN_0x121538
     string string::operator+(const string &other) const
     {
         string res(*this);

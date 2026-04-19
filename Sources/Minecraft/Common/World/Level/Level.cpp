@@ -1,14 +1,16 @@
 #include "Minecraft/Common/World/Level/Level.hpp"
+#include <map>
 
 namespace MC3DSPluginFramework
 {
 
-    WeatherState *Level::weather(void) const
+    WeatherState *Level::weather() const
     {
+        // TODO: Dimensionの解析をしたらちゃんとした処理に変更する
         return (WeatherState *)*(u32 *)(*(u32 *)(*(u32 *)(*(u32 *)(offset(0x1F0)) + 0x8) + 0x14) + 0xD0);
     }
 
-    u32 WeatherState::get(void) const
+    u32 WeatherState::get() const
     {
         u32 res = 0;
 
@@ -26,7 +28,8 @@ namespace MC3DSPluginFramework
 
     void WeatherState::set(u32 weather)
     {
-        if (weather & Weathers::Clear) {
+        if (weather & Weathers::Clear)
+        {
             rain    = 0;
             thunder = 0;
         }
@@ -38,65 +41,147 @@ namespace MC3DSPluginFramework
             thunder = 1;
     }
 
-    u32 &Level::seed(void) const
+    // FUN_0x5C85D8
+    void *Level::getLevelStorage()
     {
-        return *(u32 *)offset(0xC0);
+        if (!(mLevelStorage != nullptr))
+            LOG("Trying to access null levelStorage, use hasLevelStorage check.", mLevelStorage != nullptr, 0);
+
+        return mLevelStorage.get();
     }
 
-    Vec3_Int &Level::spawnCoords(void) const
+    // FUN_0x67CB58
+    GameRules &Level::getGameRules()
     {
-        return *(Vec3_Int *)offset(0xC4);
+        return mGameRules;
     }
 
-    TargetType Level::getTargetType(void) const
+    int &Level::seed()
     {
-        return *(TargetType *)offset(0x248);
+        return mSeed;
     }
 
-    BlockPos &Level::targetBlockPos(void) const
+    BlockPos &Level::spawnCoords()
     {
-        return *(BlockPos *)offset(0x250);
+        return mSpawnPos;
     }
 
-    GameRules &Level::getGameRules(void) const
+    // FUN_0x73F3B8
+    int Level::getTime()
     {
-        return reinterpret_cast<GameRules &(*)(const Level *)>(0x67CB58)(this);
+        return mTime;
     }
 
-    size_t Level::getDifficulty(void) const
+    // FUN_0x5CE60C
+    void Level::setTime(int set)
     {
-        return reinterpret_cast<size_t (*)(const Level *)>(0x73F30C)(this);
+        mTime = set % 192000;
     }
 
-    Util::Random &Level::getRandom(void) const
+    // FUN_0x73F30C
+    int Level::getDifficulty() const
     {
-        return *(Util::Random *)offset(0x290);
+        return mDifficulty;
     }
 
-    Entity *Level::getLookEntity(void) const
+    HitResult &Level::getHitResult()
     {
-        return *(Entity **)offset(0x268);
+        return mHitResult;
     }
 
-    void *Level::getDimension(DimensionId id) const
+    // FUN_0x720854
+    Dimension *Level::getDimension(int id) const
     {
-        return reinterpret_cast<void *(*)(const Level *, DimensionId)>(0x720854)(this, id);
+        auto it = mDimensions.find(id);
+        return (it != mDimensions.end()) ? it->second : nullptr;
     }
 
-    void *Level::createDimension(DimensionId id)
+    Dimension *Level::createDimension(int id)
     {
-        return reinterpret_cast<void *(*)(Level *, DimensionId)>(0x5C84A0)(this, id);
+        return reinterpret_cast<Dimension *(*)(Level *, int)>(0x5C84A0)(this, id);
     }
 
-    Entity *Level::fetchEntity(const UniqueID &id) const
+    Entity *Level::fetchEntity(int unused, u64 ID, int p3) const
     {
-        return reinterpret_cast<Entity *(*)(const Level *, u32, u32, u32, u32)>(0x720768)(this, 0, id.mUnk1, id.mUnk2, 0);
+        return reinterpret_cast<Entity *(*)(const Level *, int, u64, int)>(0x720768)(this, unused, ID, p3);
     }
 
-    void Level::getNextRuntimeID(u64 *id) const
+    void Level::onReleaseChunk(LevelChunk &lc)
     {
-        // 多分本来はu64じゃないオブジェクト
-        reinterpret_cast<void (*)(u64 *, const Level *)>(0x5C8AFC)(id, this);
+        reinterpret_cast<void (*)(Level *, LevelChunk &)>(0x5C8DCC)(this, lc);
+    }
+
+    void Level::addTerrainParticle(const BlockPos &pos, BlockData block, const Vec3<float> &velocity, int unknown)
+    {
+        reinterpret_cast<void (*)(Level *, const BlockPos &, BlockData, const Vec3<float> &, int)>(0x5C7BA4)(this, pos, block, velocity, unknown);
+    }
+
+    // FUN_0x5C55F4
+    void *Level::addParticle(int id, const Vec3<float> &pos, const Vec3<float> &velocity, int data)
+    {
+        if (id == 12)
+            LOG("should call addTerrainParticle instead", id != ParticleType_Terrain, 0);
+
+        for (auto listener : mListeners)
+            if (void *p = listener->addParticle(id, pos, velocity, data))
+                return p;
+
+        return nullptr;
+    }
+
+    // FUN_0x5CF324
+    void Level::playSound(int id, const Vec3<float> &pos, int p3, int p4, int p5, int p6)
+    {
+        for (auto listener : mListeners)
+            listener->playSound(id, pos, p3, p4, p5, p6);
+    }
+
+    void Level::queueEntityRemoval(gstd::unique_ptr<Entity> &&e, u32 unknown)
+    {
+        reinterpret_cast<void (*)(Level *, gstd::unique_ptr<Entity> &&, u32)>(0x5C9744)(this, std::move(e), unknown);
+    }
+
+    Entity *Level::addEntity(BlockSource &region, gstd::unique_ptr<Entity> &&e)
+    {
+        return reinterpret_cast<Entity *(*)(Level *, BlockSource &, gstd::unique_ptr<Entity> &&)>(0x5CE734)(this, region, std::move(e));
+    }
+
+    Entity *Level::addGlobalEntity(BlockSource &region, gstd::unique_ptr<Entity> &&e)
+    {
+        return reinterpret_cast<Entity *(*)(Level *, BlockSource &, gstd::unique_ptr<Entity> &&)>(0x5C8358)(this, region, std::move(e));
+    }
+
+    EntityUniqueID Level::getNewUniqueID()
+    {
+        return reinterpret_cast<EntityUniqueID (*)(Level *)>(0x5C7F00)(this);
+    }
+
+    EntityUniqueID Level::getNextRuntimeID()
+    {
+        return reinterpret_cast<EntityUniqueID (*)(Level *)>(0x5C8AFC)(this);
+    }
+
+    Random &Level::getRandom()
+    {
+        return mRandom;
+    }
+
+    // FUN_0x720908
+    bool Level::isClientSide()
+    {
+        return mIsClientSide;
+    }
+
+    // FUN_0x5C581C
+    gstd::unique_ptr<Villages> &Level::getVillages()
+    {
+        return mVillages;
+    }
+
+    // FUN_0x67CC00
+    Level::AdventureSettings &Level::getAdventureSettings()
+    {
+        return mAdventureSettings;
     }
 
 }    // namespace MC3DSPluginFramework

@@ -1,11 +1,11 @@
 #include "Minecraft/Common/Client/Gui/Screens/ScreenStack.hpp"
-#include "Minecraft/Common/Client/Gui/Screens/C_Screen.hpp"
+#include "Minecraft/Common/Client/Gui/Screens/Screen.hpp"
 #include "Minecraft/Common/Logger.hpp"
 
 namespace MC3DSPluginFramework
 {
     // FUN_0x12D54C
-    C_Screen &ScreenStack::getScreen() const
+    Screen &ScreenStack::getScreen() const
     {
         if (mScreenStack.empty())
             LOG("Screen Stack is empty - There must always be at least one stack on the screen", !mScreenStack.empty(), 0);
@@ -34,23 +34,23 @@ namespace MC3DSPluginFramework
     }
 
     // FUN_0x1A8C6C
-    void ScreenStack::Unknown1()
+    void ScreenStack::FUN_0x1a8c6c()
     {
         mUnk2 = false;
     }
 
     // FUN_0x6AB38C
-    Util::BoxedPtr::Shared<C_Screen> ScreenStack::getScreenByName(gstd::string screenName)
+    BoxedPtr::Shared<Screen> ScreenStack::getScreenByName(gstd::string screenName)
     {
         for (auto &scr : mScreenStack)
-            if (scr && (scr->getScreenName() == screenName))
+            if (scr && (scr->getName() == screenName))
                 return scr;
 
         return nullptr;
     }
 
-    gstd::vector<Util::BoxedPtr::Shared<C_Screen>> &ScreenStack::getStack()
+    gstd::vector<BoxedPtr::Shared<Screen>> &ScreenStack::getStack()
     {
         return mScreenStack;
     }
-}
+}    // namespace MC3DSPluginFramework

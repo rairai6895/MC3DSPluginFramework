@@ -1,0 +1,133 @@
+#pragma once
+
+#include "Minecraft/Common/World/Phys/Vec2.hpp"
+#include <cmath>
+
+struct Vec2_Float
+{
+    float x, y;
+
+    Vec2_Float operator*(float v) const
+    {
+        return { x * v, y * v };
+    }
+
+    Vec2_Float operator/(float v) const
+    {
+        return { x / v, y / v };
+    }
+
+    float GetMagnitude(void) const
+    {
+        return sqrtf(x * x + y * y);
+    }
+
+    Vec2_Float Normalize(void) const
+    {
+        float mag = GetMagnitude();
+        if (mag < 1e-6f || mag == 0)
+            return { 0, 0 };
+        return *this / mag;
+    }
+};
+
+struct Vec3_Int;
+struct Vec3_Float
+{
+    float x, y, z;
+
+    Vec3_Float() {}
+
+    Vec3_Float(float x, float y, float z) :
+        x(x), y(y), z(z) {}
+
+    Vec3_Float(const Vec3_Float &other) :
+        x(other.x), y(other.y), z(other.z) {}
+
+    Vec3_Int ToInt(void) const;
+
+    float GetMagnitude(void) const
+    {
+        return sqrtf(x * x + y * y + z * z);
+    }
+
+    Vec3_Float Normalize(void) const
+    {
+        float mag = GetMagnitude();
+        if (mag < 1e-6f || mag == 0)
+            return { 0, 0, 0 };
+        return { x / mag, y / mag, z / mag };
+    }
+};
+
+struct Vec3_Int
+{
+    int x, y, z;
+
+    Vec3_Int();
+
+    Vec3_Int(int x, int y, int z) :
+        x(x), y(y), z(z) {}
+
+    Vec3_Int(const Vec3_Int &other) :
+        x(other.x), y(other.y), z(other.z) {}
+
+    Vec3_Float ToFloat(void) const
+    {
+        return Vec3_Float { (float)x, (float)y, (float)z };
+    }
+};
+
+inline Vec3_Int Vec3_Float::ToInt(void) const
+{
+    return Vec3_Int((int)x, (int)y, (int)z);
+}
+
+struct MoveDirection2D
+{
+    Vec2_Float forward;
+    Vec2_Float side;
+};
+
+struct CameraAngles
+{
+    float pitch;
+    float yaw;
+
+    CameraAngles()                     = default;
+    CameraAngles(const CameraAngles &) = default;
+
+    CameraAngles(float p, float y) :
+        pitch(p), yaw(y)
+    {
+    }
+
+    CameraAngles(const MC3DSPluginFramework::Vec2<float> &rot) :
+        pitch(rot.x),
+        yaw(rot.y)
+    {
+    }
+
+    CameraAngles GetRad(void) const
+    {
+        return { (float)(-pitch * (std::numbers::pi / 180.0f)), ((float)((yaw + 90.0f) * (std::numbers::pi / 180.0f))) };
+    }
+
+    MoveDirection2D GetMove2D(void) const
+    {
+        auto yawRad = GetRad().yaw;
+        return {
+            cosf(yawRad), sinf(yawRad), cosf(yawRad - std::numbers::pi / 2), sinf(yawRad - std::numbers::pi / 2)
+        };
+    }
+
+    Vec3_Float GetMove3D(void) const
+    {
+        auto rad = GetRad();
+        return {
+            cosf(rad.yaw) * cosf(rad.pitch),
+            sinf(rad.pitch),
+            sinf(rad.yaw) * cosf(rad.pitch)
+        };
+    }
+};

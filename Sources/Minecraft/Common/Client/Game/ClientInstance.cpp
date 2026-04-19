@@ -1,112 +1,195 @@
-#include "Minecraft/Common/Client/Game/ClientInstance.hpp"
-#include "Minecraft/Common/Client/Game/MinecraftGame.hpp"
-#include "Minecraft/Common/Client/Gui/Screens/ScreenChooser.hpp"
-#include "Minecraft/Common/Client/Gui/Screens/ScreenStack.hpp"
-#include "Minecraft/Common/Client/Input/PlayerController.hpp"
+#include "ClientInstance.hpp"
+#include "../Gui/Screens/Screen.hpp"
+#include "../Gui/Screens/ScreenChooser.hpp"
+#include "../Gui/Screens/ScreenStack.hpp"
+#include "../Input/ClientInputHandler.hpp"
+#include "../Player/LocalPlayer.hpp"
+#include "Minecraft/Common/World/Entity/Entity.hpp"
+#include "Minecraft/Common/World/Entity/Player/Abilities.hpp"
 #include "Minecraft/Common/World/Level/Level.hpp"
+#include "MinecraftGame.hpp"
 
 namespace MC3DSPluginFramework
 {
+
     MinecraftGame *ClientInstance::getMinecraftGame() const
     {
         return mMinecraftGame;
     }
 
-    void ClientInstance::onTick(u32 tick, u32 maxtick)
+    Minecraft &ClientInstance::getServerData() const
     {
-        reinterpret_cast<void (*)(ClientInstance *, u32, u32)>(0x2520FC)(this, tick, maxtick);
-    }
-
-    void *ClientInstance::getServerData() const
-    {
-        return mServerData;
-
-        // FUN_0x124DD0 getLevel
+        return *mServerData;
     }
 
     // FUN_0x6C72CC
-    Entity *ClientInstance::getPlayer() const
+    LocalPlayer *ClientInstance::getPlayer() const
     {
-        if (!mUnk9)
+        if (!m0x28)
             return mLocalPlayer;
 
         return nullptr;
     }
 
-    Entity *ClientInstance::getLocalPlayer() const
+    LocalPlayer *ClientInstance::getLocalPlayer() const
     {
         return mLocalPlayer;
     }
 
+    // FUN_0x124DC8
     Level *ClientInstance::getLevel() const
     {
-        return reinterpret_cast<Level *(*)(const ClientInstance *)>(0x124DC8)(this);
+        return mServerData->getLevel();
     }
 
-    PlayerController *ClientInstance::getController() const
+    // FUN_0x12AAD4
+    ClientInputHandler &ClientInstance::getClientInputHandler() const
     {
-        return reinterpret_cast<PlayerController *(*)(const ClientInstance *)>(0x12AAD4)(this);
+        return mMinecraftGame->getClientInputHandler();
     }
 
     // FUN_0x6C13E8
-    ScreenChooser *ClientInstance::getScreenChooser() const
+    ScreenChooser &ClientInstance::getScreenChooser() const
     {
         return mMinecraftGame->getScreenChooser();
     }
 
     // FUN_0x22743C
-    ScreenStack *ClientInstance::getScreenStack() const
+    ScreenStack &ClientInstance::getScreenStack() const
     {
         return mMinecraftGame->getScreenStack();
     }
 
     // FUN_0x252474
-    C_Screen &ClientInstance::getScreen() const
+    Screen &ClientInstance::getScreen() const
     {
         return mMinecraftGame->getScreen();
     }
 
-    // FUN_0x6C734C
-    bool ClientInstance::isStickInputEnabled() const
+    // FUN_0x225EBC
+    Options &ClientInstance::getOptions() const
     {
-        auto screenStack = mMinecraftGame->getScreenStack();
-        auto &stack      = screenStack->mScreenStack;
-        auto &unkStack   = screenStack->mUnk1;
+        return mMinecraftGame->getOptions();
+    }
 
-        bool enabled = true;
+    // FUN_0x6C734C
+    bool ClientInstance::FUN_006c734c() const
+    {
+        return reinterpret_cast<bool (*)(const ClientInstance *)>(0x6C734C)(this);
+
+        /*
+        auto  screenStack = mMinecraftGame->getScreenStack();
+        auto &stack       = screenStack->mScreenStack;
+        auto &queue       = screenStack->mPushQueue;
+        bool  enabled     = true;
 
         if (!stack.empty()) {
             auto &top = stack.back();
-            enabled   = top->enablesStickInput();
+            enabled   = top->Unknown52();
         }
 
-        if (enabled) {
-            for (auto &unk : unkStack)
-                if (!unk->enablesStickInput())
-                    return false;
-        }
+        if (!enabled)
+            return false;
 
-        return enabled;
+        for (auto &q : queue)
+            if (!q->Unknown52())
+                return false;
+
+        return false;
+        */
     }
 
     // FUN_0x251158
-    bool ClientInstance::pause()
+    bool ClientInstance::pushPauseScreen()
     {
-        if (this->isStickInputEnabled())
-            this->getScreenChooser()->openPauseMenu();
+        if (FUN_006c734c())
+            getScreenChooser().pushPauseScreen();
 
         return true;
     }
 
+    // isInGame?
+    // FUN_0x12AAE4
     bool ClientInstance::FUN_0012aae4() const
     {
-        auto screenStack = mMinecraftGame->getScreenStack();
+        ScreenStack &screenStack = mMinecraftGame->getScreenStack();
 
-        if (!screenStack->empty())
-            if (!screenStack->getScreen().disablesStickInput())
-                return 1;
+        if (!screenStack.empty())
+            if (!screenStack.getScreen().Unknown44())
+                return true;
 
-        return 0;
+        return false;
+    }
+
+    // FUN_0x6C1130
+    bool ClientInstance::FUN_006c1130() const
+    {
+        return mMinecraftGame->getScreenStack().getScreen().Unknown44();
+    }
+
+    // FUN_0x6C7368
+    Font &ClientInstance::getDefaultFont() const
+    {
+        return mMinecraftGame->getDefaultFont();
+    }
+
+    Font &ClientInstance::getSGAFont() const
+    {
+        return mMinecraftGame->getSGAFont();
+    }
+
+    Font &ClientInstance::getSmallFont() const
+    {
+        return mMinecraftGame->getSmallFont();
+    }
+
+    // FUN_0x6C1120
+    TextureGroup &ClientInstance::getTextures() const
+    {
+        return mMinecraftGame->getTextures();
+    }
+
+    void ClientInstance::FUN_00251e5c()
+    {
+        mMinecraftGame->getScreen().Unknown5();
+    }
+
+    // FUN_0x6C13D8
+    LevelRenderer *ClientInstance::getLevelRenderer() const
+    {
+        return mMinecraftGame->getLevelRenderer();
+    }
+
+    // FUN_0x225EAC
+    Gui &ClientInstance::getGui() const
+    {
+        return mMinecraftGame->getGui();
+    }
+
+    // FUN_0x3E907C
+    void ClientInstance::toggleSpectator()
+    {
+        Abilities &abilities = mLocalPlayer->getAbilities();
+        abilities.setBool(Abilities::NOCLIP, !abilities.getBool(Abilities::NOCLIP));
+    }
+
+    // FUN_0x6C15E4
+    ResourcePackManager &ClientInstance::getResourcePackManager() const
+    {
+        return mMinecraftGame->getResourcePackManager();
+    }
+
+    // FUN_0x6C13F8
+    SkinRepository &ClientInstance::getSkinRepository() const
+    {
+        return mMinecraftGame->getSkinRepository();
+    }
+
+    // FUN_0x3E99DC
+    void ClientInstance::pickBlockCreative()
+    {
+        if (mLocalPlayer->isCreative())
+            mLocalPlayer->pickBlockCreative(getLevel()->getHitResult(), false);
     }
 
 }    // namespace MC3DSPluginFramework

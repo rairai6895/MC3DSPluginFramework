@@ -3,52 +3,63 @@
 namespace MC3DSPluginFramework
 {
 
+    SystemMessagesScreen::SystemMessagesScreen(MinecraftGame *minecraftGame, ClientInstance *clientInstance) :
+        Screen(minecraftGame, clientInstance)
+    {
+        // reinterpret_cast<void (*)(SystemMessagesScreen *, MinecraftGame *, ClientInstance *, u8)>(0x405F7C)(this, minecraftGame, clientInstance, unknown /* 0固定？*/);
+
+        SystemMessagesScreen *&s_pInstance = *(SystemMessagesScreen **)(0xA31AD4 + 4);
+
+        if (!(s_pInstance == nullptr))
+            LOG("Only one system messages screen should be loaded at a time", s_pInstance == nullptr, 0);
+
+        s_pInstance = this;
+    }
+
     void SystemMessagesScreen::Unknown13()
     {
-        reinterpret_cast<void (*)(C_Screen *)>(0x405BCC)(this);
+        reinterpret_cast<void (*)(Screen *)>(0x405BCC)(this);
     }
 
     bool SystemMessagesScreen::Unknown40()
     {
-        return 1;
+        return true;
     }
 
-    bool SystemMessagesScreen::Unknown41()
+    bool SystemMessagesScreen::disableCstick()
     {
-        return 0;
+        return false;
     }
 
-    bool SystemMessagesScreen::Unknown43()
+    bool SystemMessagesScreen::allowsHotbarInput()
     {
-        return 1;
+        return true;
     }
 
-    bool SystemMessagesScreen::disablesStickInput() const
+    bool SystemMessagesScreen::Unknown44() const
     {
-        return 0;
+        return false;
     }
 
-    bool SystemMessagesScreen::Unknown53()
+    bool SystemMessagesScreen::renderBehind()
     {
-        return 0;
+        return false;
     }
 
-    gstd::string SystemMessagesScreen::getScreenName()
+    gstd::string SystemMessagesScreen::getName()
     {
         return "system_messages_screen";
     }
 
-    void SystemMessagesScreen::Unknown68(u32 unknown1, u32 unknown2, u32 unknown3, float unknown4)
+    void SystemMessagesScreen::render(int touchX, int touchY, int useScreen, float tick)
     {
-        // おそらくメッセージ描画
-
         if (!mMinecraftGame->isShowingScreen("hud_screen"))
-            reinterpret_cast<void (*)(SystemMessagesScreen *, u32, u32, u32, float)>(0x405DFC)(this, unknown1, unknown2, unknown3, unknown4);
+            reinterpret_cast<void (*)(SystemMessagesScreen *, int, int, int, float)>(0x405DFC)(this, touchX, touchY, useScreen, tick);
     }
 
-    void SystemMessagesScreen::Unknown69()
+    void SystemMessagesScreen::setupComponents()
     {
-        mScreenSize_X = *(u32 *)0x919FC4;
+        mWidth = *(int *)0x919FC4;
     }
 
 }    // namespace MC3DSPluginFramework

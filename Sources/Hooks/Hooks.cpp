@@ -1,28 +1,46 @@
-#include "Hooks/Hooks.hpp"
+#include "Hooks.hpp"
+#include "Extensions/Event.hpp"
+#include "Extensions/UserCode.hpp"
+#include "Minecraft/Common/Client/Game/MinecraftGame.hpp"
+#include "Minecraft/Common/Client/Gui/Components/BaseButton.hpp"
+#include "Minecraft/Common/Client/Gui/Screens/BaseScreen.hpp"
 #include "Minecraft/Common/Thread.hpp"
+#include "Minecraft/Common/World/Item/Crafting/Recipes.hpp"
 #include <algorithm>
 
 namespace MC3DSPluginFramework
 {
-    std::vector<std::thread::id> Hooks::mPluginThreads;
-    HookEx Hooks::mMain;
-    HookEx Hooks::mRegisterNbtTags;
-    HookEx Hooks::mShaderUpdateSkip;
-    HookEx Hooks::mMallocDeadlockFix;
-
     void Hooks::install()
     {
-        mMain.InitSubWrap(0x10001C, (u32)mainCallback, 0x10598C);
-        mMain.Enable();
+        constexpr u32 NOP = 0xE320F000;
 
-        mRegisterNbtTags.InitRoutine(0x7717BC, registerNbtTagsCallback);
-        mRegisterNbtTags.Enable();
+        MainHook.initSubWrap(0x10001C, (u32)Main, 0);
+        MainHook.enable();
 
-        mShaderUpdateSkip.InitMitm(0x66D06C, (u32)shaderUpdateSkipCallback);
-        mShaderUpdateSkip.Enable();
+        RegisterNbtTagsHook.initRoutine(0x7717BC, RegisterNbtTags);
+        RegisterNbtTagsHook.enable();
 
-        mMallocDeadlockFix.InitMitm(0x11494C, (u32)mallocDeadlockFixCallback);
-        mMallocDeadlockFix.Enable();
+        ShaderUpdateSkipHook.initMitm(0x66D06C, (u32)ShaderUpdateSkip);
+        ShaderUpdateSkipHook.enable();
+
+        CreativeMenu_registerMenuItemsHook.initSubWrap(0x56C2AC, 0, (u32)CreativeMenu_registerMenuItems);
+        CreativeMenu_registerMenuItemsHook.enable();
+
+        // ボタンのバグ修正
+        *(u32 *)0x9A144C = (u32)BaseButton_onTouchRelease;
+        *(u32 *)0x9CB638 = (u32)BaseButton_onTouchRelease;
+        *(u32 *)0x9D9F94 = (u32)BaseButton_onTouchRelease;
+        *(u32 *)0x9DA454 = (u32)BaseButton_onTouchRelease;
+        *(u32 *)0x9DAB9C = (u32)BaseButton_onTouchRelease;
+
+        // 無駄なregisterCreativeItems呼び出しを削除
+        *(u32 *)0x47AEEC = NOP;
+
+        // 無駄なregisterRecipes呼び出しを削除
+        *(u32 *)0x47AF04 = NOP;
+
+        Recipes_registerRecipesHook.initRoutine(0x635D08, Recipes_registerRecipes);
+        Recipes_registerRecipesHook.enable();
     }
 
     void Hooks::pushPluginThreadId(std::thread::id id)
@@ -53,15 +71,14 @@ namespace MC3DSPluginFramework
         return false;
     }
 
-    void Hooks::mainCallback()
+    void Hooks::Main()
     {
-
-        GameScheduler::onMainOnce();
+        UserCode::onMainOnce();
     }
 
     // グローバル変数でstatic gstd::stringを初期化できないため、ゲームスレッドに初期化させる。
-    // あらかじめ使うタグを登録しとく理由はNBTを扱う際に、gstd::stringのメモリ消費を最小限に抑えるためである。
-    void Hooks::registerNbtTagsCallback(Regs &regs, u32 *sp, HookEx *hook)
+    // あらかじめ使うタグを登録しとく理由はNBTを扱う際に、gstd::stringのメモリ消費を最小限に抑えるため
+    void Hooks::RegisterNbtTags(Regs &regs, u32 *sp, Asterium::AstHook *hook)
     {
         Tag::RepairCost          = "RepairCost",
         Tag::BlockEntityTag      = "BlockEntityTag",
@@ -96,8 +113,10 @@ namespace MC3DSPluginFramework
         Event::States |= EventStates::RegisteredNbtTags;
     }
 
-    void Hooks::shaderUpdateSkipCallback(Dimension *_this, const BlockPos &pos)
+    void Hooks::ShaderUpdateSkip(Dimension *_this, const BlockPos &pos)
     {
+        // BackGroundWorkerが原因の可能性あり
+
         if (isPluginThread(std::this_thread::get_id()))
             return;
 
@@ -105,67 +124,31 @@ namespace MC3DSPluginFramework
             reinterpret_cast<void (*)(void *, const BlockPos &)>(0x4523E4)(p, pos);
     }
 
-    void *Hooks::mallocDeadlockFixCallback(size_t size, Heap::Type type, u32 param3, u32 param4)
+    bool Hooks::BaseButton_onTouchRelease(BaseButton *_this, MinecraftGame *minecraftGame, int touchX, int touchY)
     {
-        bool paused = CTRPluginFramework::Process::IsPaused();
+        bool clicked = _this->mDragging && _this->isHovered(touchX, touchY);
+        _this->stopDragging();
 
-        // 不正なTypeを弾く
-        if (type != Heap::Type::Default && type != Heap::Type::Unknown)
-            type = Heap::Type::CTR;
+        if (!clicked)
+            return false;
 
-        while (true) {
-            if (*(u8 *)0xA30D09)
-                type = Heap::Type::CTR;
+        if (_this->mScreen_UnknownClass2)
+            _this->mScreen_UnknownClass2->Unknown1(*_this);
 
-            // 本当にアロケーターかは分からない
-            u32 allocator = **(u32 **)(0x919558 + (u8)type * 4);
+        return true;
+    }
 
-            if (type == Heap::Type::Unknown && size < 0x2801) {
-                allocator = *(u32 *)0xA30D20;
-            }
+    void Hooks::CreativeMenu_registerMenuItems()
+    {
+        auto registerCreativeItem = reinterpret_cast<void (*)(const ItemInstance &)>(0x56E108);
+        UserCode::registerCreativeItems(registerCreativeItem);
+    }
 
-            gctr::RecursiveLock *lock = (gctr::RecursiveLock *)(allocator + 0x58);
-
-            if (!paused)
-                lock->lock();
-
-            void *res = reinterpret_cast<void *(*)(u32, size_t, u32, u32, u32, u32)>(0x10BA88)(allocator, size, param3, param4, 0, 0);
-
-            if (!paused)
-                lock->unlock();
-
-            if (res != 0)
-                return res;
-
-            if (allocator == *(u32 *)0xA30D20) {
-                allocator = **(u32 **)(0x919558 + (u8)type * 4);
-                lock      = (gctr::RecursiveLock *)(allocator + 0x58);
-
-                if (!paused)
-                    lock->lock();
-
-                res = reinterpret_cast<void *(*)(u32, size_t, u32, u32, u32, u32)>(0x10BA88)(allocator, size, param3, param4, 0, 0);
-
-                if (!paused)
-                    lock->unlock();
-
-                if (res != 0)
-                    return res;
-            }
-
-            if (type != Heap::Type::Default)
-                break;
-
-            type = Heap::Type::Unknown;
-        }
-
-        if (0x17FFFF < size || *(u32 *)0xA30D08 != 0)
-            *(u32 *)nullptr = 0;
-
-        if (*(u8 *)0xA30D08 = 1, *(u32 *)0xA30D0C == 0)
-            *(u32 *)nullptr = 0;
-
-        return 0;
+    void Hooks::Recipes_registerRecipes(Regs &regs, u32 *sp, Asterium::AstHook *hook)
+    {
+        Recipes &_this = *reinterpret_cast<Recipes *>(regs.r0);
+        _this.registerRecipes();
+        UserCode::registerRecipes(_this);
     }
 
 }    // namespace MC3DSPluginFramework

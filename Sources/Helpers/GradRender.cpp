@@ -1,4 +1,4 @@
-#include "Helpers/GradRender.hpp"
+#include "GradRender.hpp"
 
 namespace GradRender
 {
@@ -145,7 +145,7 @@ namespace GradRender
             int count = std::min(9, size);
             int posY  = 240 - 24 * count - 5;
 
-            for (size_t i = std::max(0, size - count); i < size; ++i) {
+            for (int i = std::max(0, size - count); i < size; ++i) {
                 auto &msg = messages[i];
                 int width = CTRPF::OSD::GetTextWidth(1, msg.mMessage);
                 int posX  = (400 - width) - 10;

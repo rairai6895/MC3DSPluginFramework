@@ -1,8 +1,8 @@
-#include "Minecraft/Common/Client/Input/MinecraftInputHandler.hpp"
-#include "Minecraft/Common/Client/Input/PlayerController.hpp"
+#include "MinecraftInputHandler.hpp"
+#include "ClientInputHandler.hpp"
 
 namespace MC3DSPluginFramework
 {
-    MinecraftInputHandler::MinecraftInputHandler(PlayerController *parent) :
+    MinecraftInputHandler::MinecraftInputHandler(ClientInputHandler *parent) :
         mParent(parent) {}
 }    // namespace MC3DSPluginFramework

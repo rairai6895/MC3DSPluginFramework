@@ -1,0 +1,33 @@
+#pragma once
+
+#include "Minecraft/Common/NBT/Tag.hpp"
+
+namespace MC3DSPluginFramework
+{
+    class NamedTag : public Tag
+    {
+        USE_GAME_ALLOCATOR
+    public:
+        NamedTag(gstd::string parent) :
+            mParent(parent)
+        {
+            *(u32 *)this = 0x9D1250;
+        }
+
+    public:
+        ~NamedTag() override = default;
+
+        void setTag(gstd::string tag) override
+        {
+            mParent = tag;
+        }
+
+        gstd::string getTag() const override
+        {
+            return mParent;
+        }
+
+    protected:
+        gstd::string mParent;
+    };
+}    // namespace MC3DSPluginFramework
